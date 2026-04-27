@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact &middot; Redline Growth</title>
+<meta name="description" content="Schedule a discovery conversation with Patrick Dodson, Head of Business Development. Thirty to forty-five minutes. No SDR handoff. Honest feedback about fit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   REDLINE GROWTH HOMEPAGE REFERENCE · v1.3
+   Visual spec for Flint build · Task 4.6
+   Applied feedback rev 2026-04-19:
+   1. Removed pending-Nick flag
+   2. Proper dial+wordmark logo in nav (SVG inline)
+   3. Dark hero band (Nav Dark ground)
+   4. H1 line break "We Deliver Actionable Intelligence" / "For Revenue Teams."
+   5. Four mono-caps hero labels with middle-dot separators
+   6. Tightened section padding sp-24 → sp-16
+   7. Removed initials chips from segment cards
+   8. Added priority challenge headers to each segment card
+   9. Added dropdown menus to nav
+   10. Expanded footer: privacy, terms, contact block
+   ============================================ */
+
+:root {
+  --ink:        #0F1117;
+  --nav-dark:   #1A1D24;
+  --chart-dark: #252B30;
+  --amber:      #C87041;
+  --amber-dk:   #A85E2C;
+  --blue:       #5D7E8A;
+  --green:      #8A9B72;
+  --gold:       #C9A44D;
+  --crimson:    #9B1C24;
+  --vellum:     #E8E4D8;
+  --surface-1:  #F0EDE4;
+  --surface-2:  #FAF8F4;
+  --linen:      #B8A898;
+  --gray:       #6E7388;
+  --graphite:   #464B55;
+
+  --page-bg:    var(--vellum);
+  --text-1:     var(--nav-dark);
+  --text-2:     var(--graphite);
+  --text-m:     var(--gray);
+  --border-sub: rgba(0,0,0,0.08);
+  --border-acc: rgba(200,112,65,0.3);
+
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;
+  --sp-4: 16px; --sp-5: 20px; --sp-6: 24px;
+  --sp-8: 32px; --sp-10: 40px; --sp-12: 48px;
+  --sp-16: 64px; --sp-20: 80px; --sp-24: 96px;
+
+  --r-sm: 2px; --r-md: 4px; --r-lg: 6px; --r-xl: 8px;
+
+  --shadow-1: 0 1px 3px rgba(26,29,36,0.08), 0 1px 2px rgba(26,29,36,0.06);
+  --shadow-2: 0 4px 12px rgba(26,29,36,0.10), 0 2px 4px rgba(26,29,36,0.06);
+
+  --ff-display: 'Space Grotesk', system-ui, sans-serif;
+  --ff-body:    'DM Sans', system-ui, sans-serif;
+  --ff-mono:    'JetBrains Mono', ui-monospace, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ff-body);
+  background: var(--page-bg);
+  color: var(--text-1);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--sp-8);
+}
+
+/* ============================================
+   NAV · sticky, dark, amber bottom border
+   Dropdowns on Solutions, Approach, Resources, About
+   ============================================ */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--nav-dark);
+  border-bottom: 2px solid var(--amber);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--sp-3) var(--sp-8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-8);
+}
+
+.nav-brand { display: flex; align-items: center; flex-shrink: 0; }
+.nav-brand .logo { height: 32px; width: auto; display: block; }
+
+.nav-links {
+  display: flex;
+  gap: var(--sp-6);
+  align-items: center;
+  list-style: none;
+  margin: 0;
+}
+
+.nav-item { position: relative; }
+
+.nav-item > a,
+.nav-item > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ff-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--linen);
+  padding: 12px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: color 0.15s ease;
+}
+
+.nav-item > a:hover,
+.nav-item > button:hover,
+.nav-item:hover > a,
+.nav-item:hover > button { color: var(--amber); }
+
+.nav-item .caret {
+  width: 10px;
+  height: 10px;
+  margin-top: 2px;
+  transition: transform 0.2s ease;
+}
+
+.nav-item:hover .caret { transform: rotate(180deg); }
+
+
+.nav-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  font-family: var(--ff-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.88);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 3px;
+  transition: color 0.15s ease;
+  cursor: default;
+  user-select: none;
+}
+.nav-label:hover,
+.nav-item:hover .nav-label,
+.nav-item:focus-within .nav-label {
+  color: var(--amber);
+}
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: -16px;
+  min-width: 300px;
+  background: var(--nav-dark);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: 2px solid var(--amber);
+  border-radius: 0 0 var(--r-md) var(--r-md);
+  padding: var(--sp-1) 0;
+  box-shadow: var(--shadow-2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+  list-style: none;
+}
+
+.nav-item:hover .nav-dropdown,
+.nav-item:focus-within .nav-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nav-dropdown li a {
+  display: block;
+  padding: 3px var(--sp-5);
+  color: var(--linen);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-dropdown li a .dd-title {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vellum);
+  line-height: 1.35;
+}
+
+.nav-dropdown li a:hover { background: rgba(200,112,65,0.08); }
+.nav-dropdown li a:hover .dd-title { color: var(--amber); }
+
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--amber);
+  color: #fff;
+  font-family: var(--ff-display);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: var(--r-md);
+  transition: filter 0.15s ease;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.nav-cta:hover { filter: brightness(0.92); }
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--ff-display);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 26px;
+  border-radius: var(--r-md);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.btn-primary { background: var(--amber); color: #fff; }
+.btn-primary:hover { filter: brightness(0.92); }
+
+.btn-secondary { background: transparent; color: var(--amber); border: 1.5px solid var(--amber); }
+.btn-secondary:hover { background: rgba(200,112,65,0.1); }
+
+.btn-secondary-dark {
+  background: transparent;
+  color: var(--vellum);
+  border: 1.5px solid rgba(232,228,216,0.3);
+}
+.btn-secondary-dark:hover {
+  background: rgba(232,228,216,0.06);
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+.btn .arrow { display: inline-block; transition: transform 0.2s ease; }
+.btn:hover .arrow { transform: translateX(3px); }
+
+/* ============================================
+   HERO · dark band with signature inline labels
+   ============================================ */
+
+.hero {
+  background: var(--nav-dark);
+  color: var(--vellum);
+  padding: var(--sp-20) 0 var(--sp-16);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -15%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(200,112,65,0.07), transparent 60%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--sp-8);
+  position: relative;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: var(--sp-5);
+}
+
+.hero-h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -1.8px;
+  color: var(--vellum);
+  margin-bottom: var(--sp-5);
+}
+
+.hero-h1 .line { display: block; }
+
+/* Inline mono-caps labels directly under H1, separated by middle dots */
+.hero-labels {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--linen);
+  margin-bottom: var(--sp-8);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--sp-4);
+  line-height: 1.8;
+}
+
+.hero-labels .dot {
+  color: var(--amber);
+  font-weight: 700;
+}
+
+.hero-sub {
+  font-family: var(--ff-body);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--linen);
+  max-width: 62ch;
+  margin-bottom: var(--sp-8);
+}
+
+.hero-ctas {
+  display: flex;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   STAT BAR · Option B
+   ============================================ */
+
+.stat-bar {
+  background: var(--chart-dark);
+  padding: var(--sp-10) 0 var(--sp-12);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.stat-bar-frame {
+  max-width: 1200px;
+  margin: 0 auto var(--sp-8);
+  padding: 0 var(--sp-8);
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  text-align: left;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-8);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--sp-8);
+}
+
+.stat-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-4);
+  border-left: 1px solid rgba(255,255,255,0.06);
+}
+
+.stat-cell:first-child { border-left: none; }
+
+.stat-num {
+  font-family: var(--ff-display);
+  font-size: 52px;
+  font-weight: 500;
+  color: var(--amber);
+  line-height: 1;
+  letter-spacing: -1.5px;
+}
+
+.stat-label strong { font-size: 16px; }
+.stat-label {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--linen);
+  line-height: 1.45;
+  margin-top: var(--sp-2);
+}
+
+.stat-source {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  font-style: italic;
+  color: var(--gray);
+  letter-spacing: 0.04em;
+  margin-top: var(--sp-3);
+}
+
+/* ============================================
+   SECTIONS · generic (tightened padding)
+   ============================================ */
+
+.section { padding: var(--sp-16) 0; }
+
+.section-label {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: var(--sp-4);
+}
+
+.section-h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
+  color: var(--text-1);
+  max-width: 24ch;
+  margin-bottom: var(--sp-6);
+}
+
+.section-intro {
+  font-family: var(--ff-body);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-2);
+  max-width: 56ch;
+  margin-bottom: var(--sp-10);
+}
+
+.section-body {
+  font-family: var(--ff-body);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--text-2);
+  max-width: 68ch;
+  margin-bottom: var(--sp-4);
+}
+
+.inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ff-display);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--amber);
+  border-bottom: 1.5px solid var(--border-acc);
+  padding-bottom: 2px;
+  transition: border-color 0.15s ease;
+  margin-top: var(--sp-5);
+}
+
+.inline-link:hover { border-color: var(--amber); }
+.inline-link .arrow { transition: transform 0.2s ease; }
+.inline-link:hover .arrow { transform: translateX(3px); }
+
+/* ============================================
+   SEGMENT ROUTING · priority challenge header,
+   no initials chips
+   ============================================ */
+
+.segments-section {
+  padding: var(--sp-16) 0;
+  background: var(--surface-1);
+}
+
+.segment-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--sp-3);
+  margin-top: var(--sp-6);
+}
+
+.segment-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-sub);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6) var(--sp-6) var(--sp-8);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  min-height: 160px;
+  position: relative;
+  overflow: hidden;
+}
+
+.segment-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.segment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+  border-color: var(--border-acc);
+}
+
+.segment-card:hover::before { transform: scaleX(1); }
+
+.segment-eyebrow {
+  font-family: var(--ff-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-1);
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+  align-self: start;
+}
+
+.segment-meta {
+  font-family: var(--ff-mono);
+  font-size: 10.5px;
+  color: var(--text-m);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  margin-bottom: var(--sp-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.segment-challenge {
+  font-family: var(--ff-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--amber);
+  line-height: 1.35;
+  letter-spacing: -0.1px;
+  align-self: start;
+  padding-top: var(--sp-4);
+}
+
+.segment-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ff-display);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--amber);
+  align-self: end;
+  justify-self: end;
+  margin-top: var(--sp-3);
+}
+
+.segment-link .arrow { transition: transform 0.2s ease; }
+.segment-card:hover .segment-link .arrow { transform: translateX(4px); }
+
+/* ============================================
+   OPERATING MODEL · Detect. Translate. Activate.
+   ============================================ */
+
+.op-model {
+  background: var(--nav-dark);
+  color: var(--vellum);
+  padding: var(--sp-16) 0;
+}
+
+.op-model .section-label { color: var(--amber); }
+
+.op-model .section-h2 {
+  color: var(--vellum);
+  font-size: clamp(40px, 5vw, 56px);
+  letter-spacing: -1px;
+  max-width: none;
+}
+
+.op-model .section-h2 .dot { color: var(--amber); }
+
+.op-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-6);
+  margin-top: var(--sp-12);
+}
+
+.op-cell {
+  padding: var(--sp-8) var(--sp-6);
+  border-top: 2px solid var(--amber);
+  background: rgba(255,255,255,0.02);
+  border-radius: 0 0 var(--r-md) var(--r-md);
+}
+
+.op-cell-num {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--amber);
+  margin-bottom: var(--sp-3);
+  text-transform: uppercase;
+}
+
+.op-cell-h3 {
+  font-family: var(--ff-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--vellum);
+  margin-bottom: var(--sp-3);
+  letter-spacing: -0.3px;
+  line-height: 1.25;
+}
+
+.op-cell p {
+  font-family: var(--ff-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--linen);
+}
+
+.op-link-row { margin-top: var(--sp-10); }
+
+.op-link-row .inline-link {
+  color: var(--amber);
+  border-bottom-color: rgba(200,112,65,0.4);
+}
+
+/* ============================================
+   PROOF
+   ============================================ */
+
+.proof-section {
+  padding: var(--sp-16) 0;
+  background: var(--page-bg);
+}
+
+.proof-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--sp-8);
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: var(--sp-12);
+  align-items: center;
+}
+
+.proof-visual {
+  position: relative;
+  background: var(--surface-2);
+  border: 1px solid var(--border-sub);
+  border-radius: var(--r-lg);
+  padding: var(--sp-12) var(--sp-6) var(--sp-10);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  box-shadow: var(--shadow-2);
+}
+
+.proof-visual::before {
+  content: 'DEMO DOSSIER · PREVIEW';
+  position: absolute;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--amber);
+  background: rgba(200,112,65,0.1);
+  padding: 4px 8px;
+  border-radius: var(--r-sm);
+}
+
+.proof-row {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: baseline;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--border-sub);
+}
+
+.proof-row:last-child { border-bottom: none; }
+
+.proof-row-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--text-m);
+  text-transform: uppercase;
+  min-width: 110px;
+}
+
+.proof-row-val {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  color: var(--text-1);
+  line-height: 1.4;
+}
+
+/* ============================================
+   ENGAGEMENT BRIDGE
+   ============================================ */
+
+.engagement-section {
+  padding: var(--sp-16) 0;
+  background: var(--surface-1);
+  border-top: 1px solid var(--border-sub);
+}
+
+.engagement-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--sp-8);
+}
+
+.engagement-ctas {
+  display: flex;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  margin-top: var(--sp-6);
+}
+
+/* ============================================
+   FOOTER CTA
+   ============================================ */
+
+.footer-cta {
+  background: var(--nav-dark);
+  color: var(--vellum);
+  padding: var(--sp-16) 0;
+  text-align: center;
+}
+
+.footer-cta h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
+  color: var(--vellum);
+  max-width: 26ch;
+  margin: 0 auto var(--sp-8);
+}
+
+/* ============================================
+   SITE FOOTER · expanded with legal + contact
+   ============================================ */
+
+.site-footer {
+  background: var(--ink);
+  color: var(--linen);
+  padding: var(--sp-16) 0 var(--sp-6);
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.footer-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--sp-8);
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr 1fr;
+  gap: var(--sp-8);
+  margin-bottom: var(--sp-10);
+}
+
+.footer-brand .logo { height: 32px; margin-bottom: var(--sp-4); }
+
+.footer-brand p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gray);
+  max-width: 34ch;
+  margin-bottom: var(--sp-4);
+}
+
+.footer-contact {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--linen);
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+}
+
+.footer-contact a { color: var(--linen); transition: color 0.15s ease; }
+.footer-contact a:hover { color: var(--amber); }
+
+.footer-col h4 {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: var(--sp-4);
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+
+.footer-col a { font-size: 14px; color: var(--linen); transition: color 0.15s ease; }
+.footer-col a:hover { color: var(--amber); }
+
+.footer-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-8) 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--gray);
+  letter-spacing: 0.04em;
+}
+
+.footer-bar-links { display: flex; gap: var(--sp-5); }
+
+.footer-bar-links a { color: var(--gray); transition: color 0.15s ease; }
+.footer-bar-links a:hover { color: var(--amber); }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); gap: var(--sp-6) var(--sp-4); }
+  .stat-cell { border-left: none; }
+  .segment-grid { grid-template-columns: repeat(3, 1fr); }
+  .op-grid { grid-template-columns: 1fr; gap: var(--sp-4); }
+  .proof-inner { grid-template-columns: 1fr; gap: var(--sp-8); }
+  .footer-grid { grid-template-columns: 1fr 1fr 1fr; gap: var(--sp-8); }
+  .footer-brand { grid-column: 1 / -1; }
+  .options-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .section, .segments-section, .op-model, .proof-section, .engagement-section { padding: var(--sp-12) 0; }
+  .hero { padding: var(--sp-12) 0 var(--sp-10); }
+  .segment-grid { grid-template-columns: repeat(2, 1fr); }
+  .options-grid { grid-template-columns: 1fr; }
+  .engage-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-bar { flex-direction: column; align-items: flex-start; }
+}
+
+
+/* ── Universal QA-pass fixes (Apr 20 round) ─────────────────── */
+/* Strict nav-to-eyebrow parity across breadcrumb and non-breadcrumb
+   pages. Breadcrumb given a deterministic 48px height (flex-centered)
+   instead of relying on text line-metrics, which vary by browser font
+   rendering. Hero top on breadcrumb pages = 80px - 48px = 32px. Total
+   nav-to-eyebrow on breadcrumb pages = 48 + 32 = 80px, identical to
+   non-breadcrumb pages' hero top (sp-20 = 80px). */
+.breadcrumb {
+  height: 48px;
+  box-sizing: border-box;
+  padding: 0;
+}
+.breadcrumb-inner {
+  height: 100%;
+  padding: 0 var(--sp-8);
+  display: flex;
+  align-items: center;
+}
+.breadcrumb + .hero {
+  padding-top: calc(var(--sp-20) - 48px);
+}
+/* Widow prevention: preserve non-breaking spaces on last two words */
+.no-widow {
+  white-space: normal;
+}
+.no-widow > *:last-child::before {
+  content: "";
+}
+/* Generic rule: prevent orphans in h1/h2/h3 by reserving min-chars on last line */
+h1, h2, h3, .hero-h1, .section-h2, .section-body, .hero-sub, p {
+  text-wrap: pretty;
+}
+/* Card padding universal bump for tight layouts */
+.cap-card, .capability-card, .answer-card, .step-card {
+  padding: var(--sp-10) var(--sp-8);
+}
+/* ============================================
+   ACCENT COLORS · blue for infrastructure, green for outcomes
+   ============================================ */
+
+/* Options grid */
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-8); align-items: start; }
+.options-intro { font-family: var(--ff-body); font-size: 15px; color: var(--text-2); line-height: 1.55; margin-bottom: var(--sp-5); min-height: 2.4em; }
+
+/* Engagement grid */
+.engage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); margin-top: var(--sp-10); }
+
+.stat-cell:nth-child(1) { border-left-color: var(--green); }
+.stat-cell:nth-child(2) { border-left-color: var(--green); }
+.stat-cell:nth-child(3) { border-left-color: var(--green); }
+.stat-cell:nth-child(4) { border-left-color: var(--blue); }
+
+.stat-cell:nth-child(1) .stat-num { color: var(--green); }
+.stat-cell:nth-child(2) .stat-num { color: var(--green); }
+.stat-cell:nth-child(3) .stat-num { color: var(--green); }
+.stat-cell:nth-child(4) .stat-num { color: var(--blue); }
+
+
+/* Nav active state */
+.nav-item.nav-active > a { color: var(--amber); }
+.nav-item.nav-active > a::after { content: ''; display: block; height: 2px; background: var(--amber); margin-top: 2px; border-radius: 1px; }
+</style>
+
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="prototype_homepage_v19_index.html" class="nav-brand">
+      <svg class="logo" viewBox="0 0 362 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Redline Growth">
+        <g clip-path="url(#clip0_nav)">
+          <path d="M2.42044 49C2.42044 37.5419 7.37221 26.553 16.1864 18.4509C25.0006 10.3488 36.9553 5.79707 49.4204 5.79707C61.8856 5.79707 73.8402 10.3488 82.6545 18.4509C91.4687 26.553 96.4204 37.5419 96.4204 49H2.42044Z" fill="#464B55"/>
+          <path d="M49.4204 49L85.4538 21.2781C92.5343 29.0499 96.4163 38.8629 96.4204 49H49.4204Z" fill="#9B1C24"/>
+          <mask id="mask0_nav" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="2" y="-2" width="95" height="51">
+            <path d="M96.4204 -1.40341H2.42044V49H96.4204V-1.40341Z" fill="white"/>
+          </mask>
+          <g mask="url(#mask0_nav)">
+            <path d="M49.4204 49L84.2788 30.4587" stroke="#E8E4D8" stroke-width="3.39121" stroke-linecap="round"/>
+            <path d="M49.4204 54.4004C52.6651 54.4004 55.2954 51.9825 55.2954 49C55.2954 46.0175 52.6651 43.5996 49.4204 43.5996C46.1758 43.5996 43.5454 46.0175 43.5454 49C43.5454 51.9825 46.1758 54.4004 49.4204 54.4004Z" fill="#E8E4D8"/>
+          </g>
+          <path d="M103 49V23.3555H112.389C114.428 23.3555 116.106 23.7096 117.425 24.4179C118.744 25.1262 119.728 26.0787 120.375 27.2754C121.023 28.4478 121.347 29.7544 121.347 31.1954C121.347 32.5631 121.035 33.8453 120.411 35.0421C119.788 36.2144 118.804 37.1669 117.461 37.8996C116.142 38.6079 114.44 38.962 112.353 38.962H107.856V49H103ZM116.058 49L110.878 37.7164H116.13L121.598 49H116.058ZM107.856 35.3718H112.101C113.564 35.3718 114.643 35.0054 115.339 34.2727C116.034 33.54 116.382 32.5753 116.382 31.3786C116.382 30.1818 116.034 29.2415 115.339 28.5577C114.667 27.8494 113.588 27.4952 112.101 27.4952H107.856V35.3718Z" fill="#E8E4D8"/>
+          <path d="M133.203 49C131.38 49 129.761 48.6092 128.347 47.8277C126.956 47.0217 125.864 45.9104 125.073 44.4939C124.305 43.0529 123.922 41.3921 123.922 39.5115C123.922 37.5821 124.305 35.8847 125.073 34.4193C125.84 32.9294 126.92 31.7693 128.311 30.9389C129.725 30.0841 131.356 29.6567 133.203 29.6567C135.002 29.6567 136.572 30.0597 137.915 30.8657C139.259 31.6716 140.302 32.7585 141.045 34.1262C141.789 35.4939 142.16 37.0448 142.16 38.7788C142.16 39.0231 142.16 39.3039 142.16 39.6214C142.16 39.9145 142.136 40.2198 142.088 40.5373H127.375V37.5332H137.268C137.196 36.3365 136.776 35.3962 136.009 34.7123C135.265 34.0285 134.33 33.6866 133.203 33.6866C132.388 33.6866 131.632 33.8819 130.937 34.2727C130.241 34.6391 129.69 35.213 129.282 35.9946C128.898 36.7761 128.706 37.7653 128.706 38.962V40.0244C128.706 41.0258 128.886 41.905 129.246 42.6621C129.63 43.3948 130.157 43.9688 130.829 44.384C131.5 44.7748 132.28 44.9701 133.167 44.9701C134.054 44.9701 134.786 44.7748 135.361 44.384C135.961 43.9932 136.405 43.4925 136.692 42.8819H141.657C141.321 44.0298 140.757 45.0678 139.966 45.9959C139.175 46.924 138.203 47.6567 137.052 48.194C135.901 48.7313 134.618 49 133.203 49Z" fill="#E8E4D8"/>
+          <path d="M154.196 49C152.541 49 151.054 48.5848 149.735 47.7544C148.44 46.924 147.421 45.7761 146.677 44.3107C145.934 42.8453 145.562 41.1967 145.562 39.365C145.562 37.4844 145.934 35.8236 146.677 34.3826C147.445 32.9172 148.488 31.7693 149.807 30.9389C151.15 30.0841 152.649 29.6567 154.304 29.6567C155.599 29.6567 156.738 29.9009 157.721 30.3894C158.705 30.8779 159.496 31.5739 160.095 32.4776V22.1832H164.952V48.5604H160.635L160.095 46.0326C159.736 46.5454 159.28 47.0339 158.728 47.498C158.201 47.962 157.565 48.3284 156.822 48.597C156.078 48.8657 155.203 49 154.196 49ZM155.347 44.6771C156.306 44.6771 157.146 44.4573 157.865 44.0176C158.609 43.5536 159.184 42.9186 159.592 42.1126C160 41.3066 160.203 40.3786 160.203 39.3284C160.203 38.2781 160 37.3501 159.592 36.5441C159.184 35.7381 158.609 35.1153 157.865 34.6757C157.146 34.2117 156.306 33.9796 155.347 33.9796C154.436 33.9796 153.608 34.2117 152.865 34.6757C152.121 35.1153 151.534 35.7381 151.102 36.5441C150.694 37.3501 150.491 38.2659 150.491 39.2917C150.491 40.3663 150.694 41.3066 151.102 42.1126C151.534 42.9186 152.109 43.5536 152.829 44.0176C153.572 44.4573 154.412 44.6771 155.347 44.6771Z" fill="#E8E4D8"/>
+          <path d="M169.71 49V22.6228H174.567V49H169.71Z" fill="#E8E4D8"/>
+          <path d="M179.409 49V30.5359H184.265V49H179.409ZM181.855 28.0081C180.992 28.0081 180.272 27.7517 179.697 27.2388C179.145 26.7015 178.869 26.0298 178.869 25.2239C178.869 24.4179 179.145 23.7585 179.697 23.2456C180.272 22.7083 180.992 22.4396 181.855 22.4396C182.742 22.4396 183.462 22.7083 184.013 23.2456C184.589 23.7585 184.877 24.4179 184.877 25.2239C184.877 26.0298 184.589 26.7015 184.013 27.2388C183.462 27.7517 182.742 28.0081 181.855 28.0081Z" fill="#E8E4D8"/>
+          <path d="M189.173 49V30.5359H193.453L193.813 33.54C194.365 32.5142 195.144 31.6838 196.151 31.0488C197.183 30.4138 198.406 30.0963 199.821 30.0963C201.332 30.0963 202.603 30.4138 203.634 31.0488C204.665 31.6838 205.445 32.6119 205.972 33.8331C206.524 35.0543 206.8 36.5563 206.8 38.3392V49H201.979V38.8155C201.979 37.3501 201.667 36.2266 201.044 35.445C200.444 34.6635 199.509 34.2727 198.238 34.2727C197.423 34.2727 196.691 34.4681 196.044 34.8589C195.42 35.2497 194.928 35.8114 194.569 36.5441C194.209 37.2524 194.029 38.1194 194.029 39.1452V49H189.173Z" fill="#E8E4D8"/>
+          <path d="M220.081 49C218.258 49 216.639 48.6092 215.224 47.8277C213.833 47.0217 212.742 45.9104 211.951 44.4939C211.183 43.0529 210.799 41.3921 210.799 39.5115C210.799 37.5821 211.183 35.8847 211.951 34.4193C212.718 32.9294 213.797 31.7693 215.188 30.9389C216.603 30.0841 218.234 29.6567 220.081 29.6567C221.879 29.6567 223.45 30.0597 224.793 30.8657C226.136 31.6716 227.179 32.7585 227.923 34.1262C228.666 35.4939 229.038 37.0448 229.038 38.7788C229.038 39.0231 229.038 39.3039 229.038 39.6214C229.038 39.9145 229.014 40.2198 228.966 40.5373H214.253V37.5332H224.146C224.074 36.3365 223.654 35.3962 222.887 34.7123C222.143 34.0285 221.208 33.6866 220.081 33.6866C219.265 33.6866 218.51 33.8819 217.814 34.2727C217.119 34.6391 216.567 35.213 216.16 35.9946C215.776 36.7761 215.584 37.7653 215.584 38.962V40.0244C215.584 41.0258 215.764 41.905 216.124 42.6621C216.507 43.3948 217.035 43.9688 217.706 44.384C218.378 44.7748 219.157 44.9701 220.045 44.9701C220.932 44.9701 221.663 44.7748 222.239 44.384C222.839 43.9932 223.282 43.4925 223.57 42.8819H228.534C228.199 44.0298 227.635 45.0678 226.844 45.9959C226.052 46.924 225.081 47.6567 223.93 48.194C222.779 48.7313 221.496 49 220.081 49Z" fill="#E8E4D8"/>
+          <path d="M246.946 49C244.596 49 242.534 48.4505 240.759 47.3514C238.984 46.2279 237.605 44.6771 236.622 42.6988C235.639 40.7205 235.147 38.4125 235.147 35.7748C235.147 33.1615 235.639 30.8535 236.622 28.8507C237.629 26.848 239.044 25.2849 240.867 24.1615C242.714 23.038 244.884 22.4762 247.378 22.4762C250.208 22.4762 252.57 23.1723 254.465 24.5644C256.36 25.9321 257.571 27.8494 258.098 30.3161H254.609C254.273 28.7775 253.482 27.5563 252.235 26.6526C250.987 25.749 249.369 25.2971 247.378 25.2971C245.531 25.2971 243.913 25.7246 242.522 26.5794C241.155 27.4098 240.099 28.6065 239.356 30.1696C238.613 31.7327 238.241 33.6011 238.241 35.7748C238.241 37.9484 238.613 39.829 239.356 41.4165C240.099 42.9796 241.131 44.1764 242.45 45.0068C243.793 45.8372 245.328 46.2524 247.054 46.2524C249.74 46.2524 251.767 45.4464 253.134 43.8345C254.501 42.2225 255.28 40.0366 255.472 37.2768H248.206V34.8589H258.566V48.5604H255.796L255.544 44.3473C254.945 45.3487 254.249 46.2035 253.458 46.9118C252.69 47.5957 251.779 48.1208 250.724 48.4871C249.668 48.829 248.409 49 246.946 49Z" fill="#C87041"/>
+          <path d="M263.2 49V30.5359H265.934L266.15 34.0529C266.557 33.2225 267.073 32.5142 267.696 31.9281C268.344 31.3419 269.111 30.8901 269.999 30.5726C270.91 30.2551 271.941 30.0963 273.093 30.0963V33.3202H271.977C271.21 33.3202 270.478 33.4301 269.783 33.6499C269.087 33.8453 268.464 34.175 267.912 34.6391C267.385 35.1031 266.965 35.7381 266.653 36.5441C266.365 37.3256 266.222 38.3026 266.222 39.4749V49H263.2Z" fill="#C87041"/>
+          <path d="M283.941 49C282.262 49 280.751 48.6092 279.408 47.8277C278.065 47.0217 277.01 45.8982 276.242 44.4573C275.475 42.9919 275.091 41.2944 275.091 39.365C275.091 37.3867 275.475 35.6771 276.242 34.2361C277.034 32.7707 278.101 31.6472 279.444 30.8657C280.811 30.0597 282.334 29.6567 284.013 29.6567C285.739 29.6567 287.262 30.0597 288.581 30.8657C289.924 31.6472 290.98 32.7707 291.747 34.2361C292.539 35.6771 292.934 37.3745 292.934 39.3284C292.934 41.2822 292.539 42.9919 291.747 44.4573C290.956 45.8982 289.888 47.0217 288.545 47.8277C287.202 48.6092 285.668 49 283.941 49ZM283.977 46.3623C285.008 46.3623 285.967 46.1058 286.855 45.5929C287.742 45.0556 288.461 44.2619 289.013 43.2117C289.565 42.1615 289.84 40.867 289.84 39.3284C289.84 37.7653 289.565 36.4708 289.013 35.445C288.485 34.3948 287.778 33.6133 286.891 33.1004C286.027 32.5631 285.068 32.2944 284.013 32.2944C283.005 32.2944 282.046 32.5631 281.135 33.1004C280.248 33.6133 279.528 34.3948 278.976 35.445C278.449 36.4708 278.185 37.7653 278.185 39.3284C278.185 40.867 278.449 42.1615 278.976 43.2117C279.528 44.2619 280.236 45.0556 281.099 45.5929C281.986 46.1058 282.946 46.3623 283.977 46.3623Z" fill="#C87041"/>
+          <path d="M300.173 49L294.849 30.5359H297.87L302.007 46.1058H301.468L305.965 30.5359H309.382L313.951 46.0692L313.375 46.1058L317.476 30.5359H320.534L315.246 49H312.152L307.403 32.734H308.015L303.267 49H300.173Z" fill="#C87041"/>
+          <path d="M331.063 49C329.984 49 329.049 48.829 328.257 48.4871C327.466 48.1452 326.854 47.5712 326.423 46.7653C326.015 45.9349 325.811 44.8236 325.811 43.4315V33.137H322.645V30.5359H325.811L326.207 26.0665H328.833V30.5359H334.085V33.137H328.833V43.4315C328.833 44.5794 329.061 45.3609 329.516 45.7761C329.972 46.1669 330.775 46.3623 331.927 46.3623H333.869V49H331.063Z" fill="#C87041"/>
+          <path d="M338.028 49V22.6228H341.05V33.6499C341.649 32.5509 342.488 31.6838 343.568 31.0488C344.671 30.4138 345.87 30.0963 347.165 30.0963C348.556 30.0963 349.767 30.3894 350.798 30.9756C351.83 31.5373 352.621 32.4043 353.173 33.5767C353.724 34.749 354 36.2266 354 38.0095V49H351.014V38.3392C351.014 36.483 350.63 35.0909 349.863 34.1628C349.096 33.2103 347.98 32.734 346.518 32.734C345.486 32.734 344.551 32.9905 343.712 33.5034C342.896 34.0163 342.249 34.749 341.769 35.7015C341.289 36.654 341.05 37.8263 341.05 39.2184V49H338.028Z" fill="#C87041"/>
+        </g>
+        <defs><clipPath id="clip0_nav"><rect width="362" height="52" fill="white"/></clipPath></defs>
+      </svg>
+    </a>
+
+    <ul class="nav-links" role="menubar">
+      <li class="nav-item" role="none">
+        <a href="#" role="menuitem" aria-haspopup="true">
+          Solutions
+          <svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3 L5 7 L9 3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </a>
+        <ul class="nav-dropdown" role="menu" aria-label="Solutions">
+          <li><a href="prototype_seriesb_v14_index.html"><span class="dd-title">Series B</span></a></li>
+          <li><a href="prototype_seriesc_v1_index.html"><span class="dd-title">Series C</span></a></li>
+          <li><a href="prototype_midmarket_v1_index.html"><span class="dd-title">Mid-Market</span></a></li>
+          <li><a href="prototype_sichannel_v1_index.html"><span class="dd-title">SI &amp; Channel</span></a></li>
+          <li><a href="prototype_pe_v1_index.html"><span class="dd-title">Private Equity</span></a></li>
+        </ul>
+      </li>
+      <li class="nav-item" role="none">
+        <a href="prototype_capabilities_v2_index.html" role="menuitem" aria-haspopup="true">
+          Capabilities
+          <svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3 L5 7 L9 3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </a>
+        <ul class="nav-dropdown" role="menu" aria-label="Capabilities">
+          <li><a href="prototype_capabilities_v2_index.html#operating-model"><span class="dd-title">Operating Model</span></a></li>
+          <li><a href="prototype_capabilities_v2_index.html#services"><span class="dd-title">Services</span></a></li>
+          <li><a href="prototype_capabilities_v2_index.html#clay"><span class="dd-title">Built on Clay</span></a></li>
+          <li><a href="prototype_capabilities_v2_index.html#built-for-speed"><span class="dd-title">Designed for Speed</span></a></li>
+        </ul>
+      </li>
+      <li class="nav-item" role="none">
+        <a href="prototype_approach_v1_index.html" role="menuitem" aria-haspopup="true">
+          Approach
+          <svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3 L5 7 L9 3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </a>
+        <ul class="nav-dropdown" role="menu" aria-label="Approach">
+          <li><a href="prototype_approach_v1_index.html#why-redline"><span class="dd-title">Why Companies Want Redline Growth</span></a></li>
+          <li><a href="prototype_approach_v1_index.html#how-we-engage"><span class="dd-title">How We Engage</span></a></li>
+          <li><a href="prototype_approach_v1_index.html#pricing"><span class="dd-title">Pricing</span></a></li>
+          <li><a href="prototype_approach_v1_index.html#faq"><span class="dd-title">FAQ</span></a></li>
+        </ul>
+      </li>
+      <li class="nav-item" role="none">
+        <a href="prototype_resources_v1_index.html" role="menuitem" aria-haspopup="true">
+          Resources
+          <svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3 L5 7 L9 3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </a>
+        <ul class="nav-dropdown" role="menu" aria-label="Resources">
+          <li><a href="prototype_calculator_v1_index.html"><span class="dd-title">Pipeline Impact Calculator</span></a></li>
+          <li><a href="prototype_intellibrary_v1_index.html"><span class="dd-title">Intelligence Library</span></a></li>
+          <li><a href="#"><span class="dd-title">Insights</span></a></li>
+        </ul>
+      </li>
+      <li class="nav-item" role="none">
+        <a href="prototype_about_v1_index.html" role="menuitem" aria-haspopup="true">
+          About
+          <svg class="caret" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3 L5 7 L9 3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </a>
+        <ul class="nav-dropdown" role="menu" aria-label="About">
+          <li><a href="prototype_about_v1_index.html"><span class="dd-title">About Redline</span></a></li>
+          <li><a href="prototype_about_v1_index.html#team"><span class="dd-title">Leadership</span></a></li>
+          <li><a href="prototype_about_v1_index.html#client-successes"><span class="dd-title">Client Successes</span></a></li>
+        </ul>
+      </li>
+    </ul>
+
+    <a href="prototype_contact_v1_index.html" class="nav-cta">Schedule a Conversation</a>
+  </div>
+</nav>
+
+
+<!-- ============================================
+     HERO
+     ============================================ -->
+<section class="hero" aria-labelledby="hero-h1" style="padding:var(--sp-12) 0 var(--sp-10);">
+  <div class="hero-inner">
+    <span class="hero-eyebrow">Contact</span>
+    <h1 class="hero-h1" id="hero-h1">
+      <span class="line">Let&#x2019;s Talk!</span>
+    </h1>
+    <p class="hero-sub" style="margin-bottom:0;">The discovery conversation takes thirty to forty-five minutes, depending on how much information and detail you plan on sharing. We cover your team&#x2019;s current stage, your market, your existing infrastructure, and whether the engagement model makes sense for you. If it is not a fit, we will say so.</p>
+  </div>
+</section>
+
+<!-- ============================================
+     SECTION 1: TWO-PATH CONTACT
+     ============================================ -->
+<section class="section" aria-labelledby="s1-h2">
+  <div class="container">
+
+    <div class="engage-grid">
+
+      <!-- Left: HubSpot form -->
+      <div style="background:var(--surface-2);border:1px solid var(--border-sub);border-radius:var(--r-lg);padding:var(--sp-10) var(--sp-8);border-top:3px solid var(--amber);">
+        <div style="font-family:var(--ff-display);font-size:20px;font-weight:600;color:var(--text-1);margin-bottom:var(--sp-2);letter-spacing:-0.3px;">Send a message directly.</div>
+        <div style="font-family:var(--ff-body);font-size:14px;color:var(--amber);margin-bottom:var(--sp-6);">We respond within one business day.</div>
+        <p style="font-size:14px;color:var(--text-2);line-height:1.6;margin-bottom:var(--sp-6);">If you prefer to send context before scheduling, use the form below. We will respond shortly.</p>
+
+        <!-- HubSpot form placeholder -->
+        <div style="background:var(--surface-1);border:1px dashed var(--border-sub);border-radius:var(--r-md);min-height:380px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:var(--sp-3);">
+          <div style="font-family:var(--ff-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--amber);">Flint build &middot; item 7.3</div>
+          <div style="font-family:var(--ff-display);font-size:14px;font-weight:600;color:var(--text-1);">HubSpot contact form</div>
+          <div style="font-size:12px;color:var(--text-m);max-width:320px;text-align:center;line-height:1.5;">Replace this container with the HubSpot form embed from share link. Fields: First name, Last name, Company, Role/Title, Message. Submissions tagged with <code style="font-size:11px;">/contact</code> as the source for page-level conversion tracking.</div>
+        </div>
+
+      </div>
+
+      <!-- Right: Calendly -->
+      <div style="background:rgba(138,155,114,0.06);border:1.5px solid rgba(138,155,114,0.35);border-radius:var(--r-lg);padding:var(--sp-10) var(--sp-8);border-top:3px solid var(--green);">
+        <div style="font-family:var(--ff-display);font-size:20px;font-weight:600;color:var(--text-1);margin-bottom:var(--sp-2);letter-spacing:-0.3px;">Or schedule a time directly.</div>
+        <div style="font-family:var(--ff-body);font-size:14px;color:var(--green);margin-bottom:var(--sp-6);">30 or 45 minutes. Your choice.</div>
+        <p style="font-size:14px;color:var(--text-2);line-height:1.6;margin-bottom:var(--sp-6);">Select any available slot, and choose either a thirty-minute or forty-five-minute duration, depending on your preference. The session is with Patrick Dodson, Head of Business Development. You will receive a confirmation and a short pre-call form with three questions designed to make the call the best use of your time.</p>
+
+        <!-- Calendly placeholder (production: Calendly inline embed) -->
+        <div style="background:var(--surface-2);border:1px dashed var(--border-sub);border-radius:var(--r-md);min-height:380px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:var(--sp-3);">
+          <div style="font-family:var(--ff-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--green);">Flint build &middot; item 8.5</div>
+          <div style="font-family:var(--ff-display);font-size:14px;font-weight:600;color:var(--text-1);">Calendly inline embed</div>
+          <div style="font-size:12px;color:var(--text-m);max-width:320px;text-align:center;line-height:1.5;">Replace this container with the Calendly inline embed code once the Calendly account is configured. Inline calendar, not modal. Connected to HubSpot so bookings write to the CRM automatically.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Direct email -->
+    <div style="margin-top:var(--sp-10);text-align:center;">
+      <p style="font-family:var(--ff-mono);font-size:11px;color:var(--gray);letter-spacing:0.08em;margin-bottom:var(--sp-3);">Prefer email?</p>
+      <a href="mailto:patrick@redlinegrowth.com" style="font-family:var(--ff-display);font-size:24px;font-weight:600;color:var(--amber);text-decoration:none;display:inline-flex;align-items:center;gap:var(--sp-3);transition:filter 0.15s ease;">
+        patrick@redlinegrowth.com
+        <span style="font-size:20px;">&#x2192;</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================================
+     SITE FOOTER · Updated for streamlined architecture
+     ============================================ -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <svg class="logo" viewBox="0 0 362 52" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Redline Growth">
+        <g clip-path="url(#clip0_ftr)">
+          <path d="M2.42044 49C2.42044 37.5419 7.37221 26.553 16.1864 18.4509C25.0006 10.3488 36.9553 5.79707 49.4204 5.79707C61.8856 5.79707 73.8402 10.3488 82.6545 18.4509C91.4687 26.553 96.4204 37.5419 96.4204 49H2.42044Z" fill="#464B55"/>
+          <path d="M49.4204 49L85.4538 21.2781C92.5343 29.0499 96.4163 38.8629 96.4204 49H49.4204Z" fill="#9B1C24"/>
+          <mask id="mask0_ftr" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="2" y="-2" width="95" height="51">
+            <path d="M96.4204 -1.40341H2.42044V49H96.4204V-1.40341Z" fill="white"/>
+          </mask>
+          <g mask="url(#mask0_ftr)">
+            <path d="M49.4204 49L84.2788 30.4587" stroke="#E8E4D8" stroke-width="3.39121" stroke-linecap="round"/>
+            <path d="M49.4204 54.4004C52.6651 54.4004 55.2954 51.9825 55.2954 49C55.2954 46.0175 52.6651 43.5996 49.4204 43.5996C46.1758 43.5996 43.5454 46.0175 43.5454 49C43.5454 51.9825 46.1758 54.4004 49.4204 54.4004Z" fill="#E8E4D8"/>
+          </g>
+          <path d="M103 49V23.3555H112.389C114.428 23.3555 116.106 23.7096 117.425 24.4179C118.744 25.1262 119.728 26.0787 120.375 27.2754C121.023 28.4478 121.347 29.7544 121.347 31.1954C121.347 32.5631 121.035 33.8453 120.411 35.0421C119.788 36.2144 118.804 37.1669 117.461 37.8996C116.142 38.6079 114.44 38.962 112.353 38.962H107.856V49H103ZM116.058 49L110.878 37.7164H116.13L121.598 49H116.058ZM107.856 35.3718H112.101C113.564 35.3718 114.643 35.0054 115.339 34.2727C116.034 33.54 116.382 32.5753 116.382 31.3786C116.382 30.1818 116.034 29.2415 115.339 28.5577C114.667 27.8494 113.588 27.4952 112.101 27.4952H107.856V35.3718Z" fill="#E8E4D8"/>
+          <path d="M133.203 49C131.38 49 129.761 48.6092 128.347 47.8277C126.956 47.0217 125.864 45.9104 125.073 44.4939C124.305 43.0529 123.922 41.3921 123.922 39.5115C123.922 37.5821 124.305 35.8847 125.073 34.4193C125.84 32.9294 126.92 31.7693 128.311 30.9389C129.725 30.0841 131.356 29.6567 133.203 29.6567C135.002 29.6567 136.572 30.0597 137.915 30.8657C139.259 31.6716 140.302 32.7585 141.045 34.1262C141.789 35.4939 142.16 37.0448 142.16 38.7788C142.16 39.0231 142.16 39.3039 142.16 39.6214C142.16 39.9145 142.136 40.2198 142.088 40.5373H127.375V37.5332H137.268C137.196 36.3365 136.776 35.3962 136.009 34.7123C135.265 34.0285 134.33 33.6866 133.203 33.6866C132.388 33.6866 131.632 33.8819 130.937 34.2727C130.241 34.6391 129.69 35.213 129.282 35.9946C128.898 36.7761 128.706 37.7653 128.706 38.962V40.0244C128.706 41.0258 128.886 41.905 129.246 42.6621C129.63 43.3948 130.157 43.9688 130.829 44.384C131.5 44.7748 132.28 44.9701 133.167 44.9701C134.054 44.9701 134.786 44.7748 135.361 44.384C135.961 43.9932 136.405 43.4925 136.692 42.8819H141.657C141.321 44.0298 140.757 45.0678 139.966 45.9959C139.175 46.924 138.203 47.6567 137.052 48.194C135.901 48.7313 134.618 49 133.203 49Z" fill="#E8E4D8"/>
+          <path d="M154.196 49C152.541 49 151.054 48.5848 149.735 47.7544C148.44 46.924 147.421 45.7761 146.677 44.3107C145.934 42.8453 145.562 41.1967 145.562 39.365C145.562 37.4844 145.934 35.8236 146.677 34.3826C147.445 32.9172 148.488 31.7693 149.807 30.9389C151.15 30.0841 152.649 29.6567 154.304 29.6567C155.599 29.6567 156.738 29.9009 157.721 30.3894C158.705 30.8779 159.496 31.5739 160.095 32.4776V22.1832H164.952V48.5604H160.635L160.095 46.0326C159.736 46.5454 159.28 47.0339 158.728 47.498C158.201 47.962 157.565 48.3284 156.822 48.597C156.078 48.8657 155.203 49 154.196 49ZM155.347 44.6771C156.306 44.6771 157.146 44.4573 157.865 44.0176C158.609 43.5536 159.184 42.9186 159.592 42.1126C160 41.3066 160.203 40.3786 160.203 39.3284C160.203 38.2781 160 37.3501 159.592 36.5441C159.184 35.7381 158.609 35.1153 157.865 34.6757C157.146 34.2117 156.306 33.9796 155.347 33.9796C154.436 33.9796 153.608 34.2117 152.865 34.6757C152.121 35.1153 151.534 35.7381 151.102 36.5441C150.694 37.3501 150.491 38.2659 150.491 39.2917C150.491 40.3663 150.694 41.3066 151.102 42.1126C151.534 42.9186 152.109 43.5536 152.829 44.0176C153.572 44.4573 154.412 44.6771 155.347 44.6771Z" fill="#E8E4D8"/>
+          <path d="M169.71 49V22.6228H174.567V49H169.71Z" fill="#E8E4D8"/>
+          <path d="M179.409 49V30.5359H184.265V49H179.409ZM181.855 28.0081C180.992 28.0081 180.272 27.7517 179.697 27.2388C179.145 26.7015 178.869 26.0298 178.869 25.2239C178.869 24.4179 179.145 23.7585 179.697 23.2456C180.272 22.7083 180.992 22.4396 181.855 22.4396C182.742 22.4396 183.462 22.7083 184.013 23.2456C184.589 23.7585 184.877 24.4179 184.877 25.2239C184.877 26.0298 184.589 26.7015 184.013 27.2388C183.462 27.7517 182.742 28.0081 181.855 28.0081Z" fill="#E8E4D8"/>
+          <path d="M189.173 49V30.5359H193.453L193.813 33.54C194.365 32.5142 195.144 31.6838 196.151 31.0488C197.183 30.4138 198.406 30.0963 199.821 30.0963C201.332 30.0963 202.603 30.4138 203.634 31.0488C204.665 31.6838 205.445 32.6119 205.972 33.8331C206.524 35.0543 206.8 36.5563 206.8 38.3392V49H201.979V38.8155C201.979 37.3501 201.667 36.2266 201.044 35.445C200.444 34.6635 199.509 34.2727 198.238 34.2727C197.423 34.2727 196.691 34.4681 196.044 34.8589C195.42 35.2497 194.928 35.8114 194.569 36.5441C194.209 37.2524 194.029 38.1194 194.029 39.1452V49H189.173Z" fill="#E8E4D8"/>
+          <path d="M220.081 49C218.258 49 216.639 48.6092 215.224 47.8277C213.833 47.0217 212.742 45.9104 211.951 44.4939C211.183 43.0529 210.799 41.3921 210.799 39.5115C210.799 37.5821 211.183 35.8847 211.951 34.4193C212.718 32.9294 213.797 31.7693 215.188 30.9389C216.603 30.0841 218.234 29.6567 220.081 29.6567C221.879 29.6567 223.45 30.0597 224.793 30.8657C226.136 31.6716 227.179 32.7585 227.923 34.1262C228.666 35.4939 229.038 37.0448 229.038 38.7788C229.038 39.0231 229.038 39.3039 229.038 39.6214C229.038 39.9145 229.014 40.2198 228.966 40.5373H214.253V37.5332H224.146C224.074 36.3365 223.654 35.3962 222.887 34.7123C222.143 34.0285 221.208 33.6866 220.081 33.6866C219.265 33.6866 218.51 33.8819 217.814 34.2727C217.119 34.6391 216.567 35.213 216.16 35.9946C215.776 36.7761 215.584 37.7653 215.584 38.962V40.0244C215.584 41.0258 215.764 41.905 216.124 42.6621C216.507 43.3948 217.035 43.9688 217.706 44.384C218.378 44.7748 219.157 44.9701 220.045 44.9701C220.932 44.9701 221.663 44.7748 222.239 44.384C222.839 43.9932 223.282 43.4925 223.57 42.8819H228.534C228.199 44.0298 227.635 45.0678 226.844 45.9959C226.052 46.924 225.081 47.6567 223.93 48.194C222.779 48.7313 221.496 49 220.081 49Z" fill="#E8E4D8"/>
+          <path d="M246.946 49C244.596 49 242.534 48.4505 240.759 47.3514C238.984 46.2279 237.605 44.6771 236.622 42.6988C235.639 40.7205 235.147 38.4125 235.147 35.7748C235.147 33.1615 235.639 30.8535 236.622 28.8507C237.629 26.848 239.044 25.2849 240.867 24.1615C242.714 23.038 244.884 22.4762 247.378 22.4762C250.208 22.4762 252.57 23.1723 254.465 24.5644C256.36 25.9321 257.571 27.8494 258.098 30.3161H254.609C254.273 28.7775 253.482 27.5563 252.235 26.6526C250.987 25.749 249.369 25.2971 247.378 25.2971C245.531 25.2971 243.913 25.7246 242.522 26.5794C241.155 27.4098 240.099 28.6065 239.356 30.1696C238.613 31.7327 238.241 33.6011 238.241 35.7748C238.241 37.9484 238.613 39.829 239.356 41.4165C240.099 42.9796 241.131 44.1764 242.45 45.0068C243.793 45.8372 245.328 46.2524 247.054 46.2524C249.74 46.2524 251.767 45.4464 253.134 43.8345C254.501 42.2225 255.28 40.0366 255.472 37.2768H248.206V34.8589H258.566V48.5604H255.796L255.544 44.3473C254.945 45.3487 254.249 46.2035 253.458 46.9118C252.69 47.5957 251.779 48.1208 250.724 48.4871C249.668 48.829 248.409 49 246.946 49Z" fill="#C87041"/>
+          <path d="M263.2 49V30.5359H265.934L266.15 34.0529C266.557 33.2225 267.073 32.5142 267.696 31.9281C268.344 31.3419 269.111 30.8901 269.999 30.5726C270.91 30.2551 271.941 30.0963 273.093 30.0963V33.3202H271.977C271.21 33.3202 270.478 33.4301 269.783 33.6499C269.087 33.8453 268.464 34.175 267.912 34.6391C267.385 35.1031 266.965 35.7381 266.653 36.5441C266.365 37.3256 266.222 38.3026 266.222 39.4749V49H263.2Z" fill="#C87041"/>
+          <path d="M283.941 49C282.262 49 280.751 48.6092 279.408 47.8277C278.065 47.0217 277.01 45.8982 276.242 44.4573C275.475 42.9919 275.091 41.2944 275.091 39.365C275.091 37.3867 275.475 35.6771 276.242 34.2361C277.034 32.7707 278.101 31.6472 279.444 30.8657C280.811 30.0597 282.334 29.6567 284.013 29.6567C285.739 29.6567 287.262 30.0597 288.581 30.8657C289.924 31.6472 290.98 32.7707 291.747 34.2361C292.539 35.6771 292.934 37.3745 292.934 39.3284C292.934 41.2822 292.539 42.9919 291.747 44.4573C290.956 45.8982 289.888 47.0217 288.545 47.8277C287.202 48.6092 285.668 49 283.941 49ZM283.977 46.3623C285.008 46.3623 285.967 46.1058 286.855 45.5929C287.742 45.0556 288.461 44.2619 289.013 43.2117C289.565 42.1615 289.84 40.867 289.84 39.3284C289.84 37.7653 289.565 36.4708 289.013 35.445C288.485 34.3948 287.778 33.6133 286.891 33.1004C286.027 32.5631 285.068 32.2944 284.013 32.2944C283.005 32.2944 282.046 32.5631 281.135 33.1004C280.248 33.6133 279.528 34.3948 278.976 35.445C278.449 36.4708 278.185 37.7653 278.185 39.3284C278.185 40.867 278.449 42.1615 278.976 43.2117C279.528 44.2619 280.236 45.0556 281.099 45.5929C281.986 46.1058 282.946 46.3623 283.977 46.3623Z" fill="#C87041"/>
+          <path d="M300.173 49L294.849 30.5359H297.87L302.007 46.1058H301.468L305.965 30.5359H309.382L313.951 46.0692L313.375 46.1058L317.476 30.5359H320.534L315.246 49H312.152L307.403 32.734H308.015L303.267 49H300.173Z" fill="#C87041"/>
+          <path d="M331.063 49C329.984 49 329.049 48.829 328.257 48.4871C327.466 48.1452 326.854 47.5712 326.423 46.7653C326.015 45.9349 325.811 44.8236 325.811 43.4315V33.137H322.645V30.5359H325.811L326.207 26.0665H328.833V30.5359H334.085V33.137H328.833V43.4315C328.833 44.5794 329.061 45.3609 329.516 45.7761C329.972 46.1669 330.775 46.3623 331.927 46.3623H333.869V49H331.063Z" fill="#C87041"/>
+          <path d="M338.028 49V22.6228H341.05V33.6499C341.649 32.5509 342.488 31.6838 343.568 31.0488C344.671 30.4138 345.87 30.0963 347.165 30.0963C348.556 30.0963 349.767 30.3894 350.798 30.9756C351.83 31.5373 352.621 32.4043 353.173 33.5767C353.724 34.749 354 36.2266 354 38.0095V49H351.014V38.3392C351.014 36.483 350.63 35.0909 349.863 34.1628C349.096 33.2103 347.98 32.734 346.518 32.734C345.486 32.734 344.551 32.9905 343.712 33.5034C342.896 34.0163 342.249 34.749 341.769 35.7015C341.289 36.654 341.05 37.8263 341.05 39.2184V49H338.028Z" fill="#C87041"/>
+        </g>
+        <defs><clipPath id="clip0_ftr"><rect width="362" height="52" fill="white"/></clipPath></defs>
+      </svg>
+      <p>Redline Growth. GTM Engineering Services for B2B revenue teams.<br>Built on Clay.</p>
+      <div class="footer-contact">
+        Chicago, IL<br>
+        <a href="mailto:info@redlinegrowth.com">info@redlinegrowth.com</a><br>
+        <a href="tel:+18473083356">(847) 308-3356</a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Solutions</h4>
+      <ul>
+        <li><a href="prototype_seriesb_v14_index.html">Series B</a></li>
+        <li><a href="prototype_seriesc_v1_index.html">Series C</a></li>
+        <li><a href="prototype_midmarket_v1_index.html">Mid-Market</a></li>
+        <li><a href="prototype_sichannel_v1_index.html">SI &amp; Channel</a></li>
+        <li><a href="prototype_pe_v1_index.html">Private Equity</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Capabilities</h4>
+      <ul>
+        <li><a href="prototype_capabilities_v2_index.html#operating-model">Operating Model</a></li>
+        <li><a href="prototype_capabilities_v2_index.html#services">Services</a></li>
+        <li><a href="prototype_capabilities_v2_index.html#clay">Built on Clay</a></li>
+        <li><a href="prototype_capabilities_v2_index.html#built-for-speed">Designed for Speed</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Approach</h4>
+      <ul>
+        <li><a href="prototype_approach_v1_index.html#why-redline">Why Companies Want Redline Growth</a></li>
+        <li><a href="prototype_approach_v1_index.html#how-we-engage">How We Engage</a></li>
+        <li><a href="prototype_approach_v1_index.html#pricing">Pricing</a></li>
+        <li><a href="prototype_approach_v1_index.html#faq">FAQ</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="prototype_calculator_v1_index.html">Pipeline Impact Calculator</a></li>
+        <li><a href="prototype_intellibrary_v1_index.html">Intelligence Library</a></li>
+        <li><a href="#">Insights</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="prototype_about_v1_index.html">About</a></li>
+        <li><a href="prototype_about_v1_index.html#team">Team</a></li>
+        <li><a href="prototype_about_v1_index.html#client-successes">Client Successes</a></li>
+        <li><a href="prototype_workwithus_v1_index.html">Work With Us</a></li>
+        <li><a href="prototype_contact_v1_index.html">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <span>&copy; 2026 Redline Growth &middot; Chicago &middot; Clay Advanced Artisan Partner</span>
+    <div class="footer-bar-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

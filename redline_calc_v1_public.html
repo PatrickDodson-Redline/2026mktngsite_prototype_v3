@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Impact Calculator — Redline Growth</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --amber:       #C87041;
+  --amber-dark:  #A85E2C;
+  --amber-light: #D69471;
+  --amber-faint: #FAF1EC;
+  --blue:        #5D7E8A;
+  --blue-faint:  #EFF2F3;
+  --vellum:      #E8E4D8;
+  --vellum-dark: #D4CFC4;
+  --graphite:    #464B55;
+  --ink:         #1A1D24;
+  --muted:       #6E7380;
+  --surface-1:   #F0EDE4;
+  --surface-2:   #FAF8F4;
+  --border:      rgba(0,0,0,0.07);
+  --border-mid:  rgba(0,0,0,0.12);
+  --font:        'DM Sans', sans-serif;
+  --mono:        'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--surface-1); color: var(--ink); overflow: hidden; }
+
+/* NAV */
+.nav { background: var(--ink); padding: 0 40px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.16em; color: var(--amber); text-transform: uppercase; text-decoration: none; }
+.nav-badge { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; }
+
+/* HERO */
+.hero { background: var(--ink); padding: 64px 40px 56px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+
+.hero-eyebrow { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 16px; }
+.hero-headline { font-size: 42px; font-weight: 600; line-height: 1.15; color: #fff; letter-spacing: -0.5px; margin-bottom: 20px; }
+.hero-headline em { font-style: italic; color: var(--amber); font-weight: 300; }
+.hero-body { font-size: 16px; color: rgba(255,255,255,0.55); line-height: 1.7; max-width: 600px; margin-bottom: 28px; }
+.hero-tier-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.tier-pip { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; padding: 5px 10px; border-radius: 3px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.08); text-decoration: none; transition: color 0.15s; }
+.tier-pip.active { background: rgba(200,112,65,0.15); color: var(--amber); border-color: rgba(200,112,65,0.35); }
+.tier-pip:hover:not(.active) { color: rgba(255,255,255,0.65); }
+
+
+/* Two-column layout */
+.main { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; margin: 0 auto; padding: 24px 24px 24px; }
+.selector-col { display: flex; flex-direction: column; gap: 16px; }
+.output-col { }
+.output-section { display: block !important; }
+.pending-note { display: block !important; }
+.progress-bar { display: none; }
+@media (max-width: 900px) { .main { grid-template-columns: 1fr; } .output-col { position: static; } }
+
+/* MAIN */
+
+
+/* SELECTOR BLOCK */
+.selector-block { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 20px 20px; margin-bottom: 12px; }
+.selector-label { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+
+/* BUTTONS — general */
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.preset-btn {
+  flex: 1; min-width: 0;
+  background: var(--surface-1);
+  border: 1.5px solid var(--border-mid);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.preset-btn:hover { border-color: var(--amber-light); background: #fff; }
+.preset-btn.selected { border-color: var(--amber); border-width: 2px; background: var(--amber-faint); }
+.preset-btn.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; position: relative; }
+.preset-btn.disabled:hover { border-color: rgba(0,0,0,0.08); background: var(--linen); }
+.preset-btn.disabled .btn-label { color: rgba(0,0,0,0.45); }
+.preset-btn.disabled .btn-sub { color: rgba(0,0,0,0.3); }
+.btn-label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); }
+.preset-btn.selected .btn-label { color: var(--amber-dark); }
+.btn-sub { display: block; font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 0.04em; margin-top: 3px; }
+.preset-btn.selected .btn-sub { color: var(--amber); }
+
+
+/* Stage selector cards - equal height, top-aligned */
+.btn-row.stage-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.btn-row.stage-row .preset-btn { display: flex; flex-direction: column; align-items: flex-start; min-height: 0; }
+.btn-row.stage-row .btn-label { font-size: 11.5px; line-height: 1.35; }
+.btn-row.stage-row .btn-sub { font-size: 8.5px; line-height: 1.4; margin-top: 4px; }
+.btn-row.stage-row .tip-icon { top: 8px; right: 8px; }
+
+/* ACV — 4 equal buttons */
+.btn-row.acv .preset-btn { flex: 0 0 calc(25% - 6px); }
+.btn-row.acv .btn-label { font-size: 15px; }
+
+/* Maturity — ? icon (JS tooltip, see below) */
+.preset-btn.has-tip { padding-right: 24px; }
+.tip-icon {
+  position: absolute; top: 11px; right: 10px;
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--vellum); border: 1px solid var(--vellum-dark);
+  font-size: 9px; font-weight: 700; color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  cursor: help; font-family: var(--mono);
+  transition: background 0.12s, color 0.12s;
+  user-select: none;
+}
+.preset-btn.selected .tip-icon { background: rgba(200,112,65,0.15); border-color: var(--amber-light); color: var(--amber); }
+
+/* Global tooltip */
+#global-tooltip {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  max-width: 280px;
+  background: var(--ink);
+  color: rgba(255,255,255,0.75);
+  font-size: 11px;
+  line-height: 1.65;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+  pointer-events: none;
+  font-family: var(--font);
+}
+
+/* PROGRESS */
+.progress-bar { height: 3px; background: var(--vellum); border-radius: 2px; margin: 24px 0 32px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--amber); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+
+/* PENDING */
+.pending-note { text-align: center; padding: 36px 24px; border: 1.5px dashed var(--vellum-dark); border-radius: 10px; margin-top: 8px; }
+.pending-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+.pending-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--vellum-dark); transition: background 0.3s; }
+.pending-dot.done { background: var(--amber); }
+.pending-note p { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+
+/* OUTPUT */
+.output-section {
+  background: var(--ink); border-radius: 12px; padding: 28px 24px;
+  margin-top: 8px;
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+}
+.output-section.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.output-eyebrow { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 8px; }
+.output-number { font-size: 36px; font-weight: 700; color: var(--amber); letter-spacing: -1px; line-height: 1; margin-bottom: 6px; }
+.output-sublabel { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 24px; }
+.output-chips { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 24px; }
+.sel-chip { font-family: var(--mono); font-size: 9px; letter-spacing: 0.07em; padding: 4px 9px; border-radius: 3px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.09); }
+.output-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 20px 0 24px; }
+.output-framing { font-size: 15px; color: rgba(255,255,255,0.6); line-height: 1.75; margin-bottom: 32px; }
+.output-framing strong { color: #fff; font-weight: 600; }
+.output-compare {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: nowrap;
+}
+.output-compare-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.delta-col {
+  border-left: 1px solid rgba(255,255,255,0.1);
+  padding-left: 16px;
+}
+.output-compare-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+.output-compare-num {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  color: rgba(255,255,255,0.5);
+  white-space: nowrap;
+}
+.output-compare-num.amber { color: var(--amber); }
+.output-compare-num.green { color: #8A9B72; }
+.output-compare-arrow {
+  font-size: 20px;
+  color: rgba(255,255,255,0.2);
+  margin-top: 18px;
+  flex-shrink: 0;
+}
+.cta-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--amber); color: #fff; font-family: var(--font); font-size: 14px; font-weight: 600; padding: 13px 24px; border-radius: 7px; text-decoration: none; transition: background 0.15s; margin-right: 12px; margin-bottom: 8px; }
+.cta-primary:hover { background: var(--amber-dark); }
+.cta-secondary { display: inline-flex; align-items: center; color: rgba(255,255,255,0.4); font-size: 13px; text-decoration: none; padding: 13px 0; transition: color 0.15s; margin-bottom: 8px; }
+.cta-secondary:hover { color: rgba(255,255,255,0.65); }
+
+/* FOOTER */
+.footer { border-top: 1px solid var(--border); padding: 24px 40px; display: flex; align-items: center; justify-content: space-between; background: var(--surface-2); }
+.footer-copy { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+.footer-note { font-size: 11px; color: var(--muted); max-width: 480px; text-align: right; line-height: 1.5; }
+
+@media (max-width: 600px) {
+  .hero, .main { padding-left: 20px; padding-right: 20px; }
+  .hero-headline { font-size: 30px; }
+  .output-number { font-size: 40px; }
+  .btn-row.acv .preset-btn { flex: 0 0 calc(50% - 4px); }
+  .footer { flex-direction: column; gap: 12px; }
+  .footer-note { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<div id="global-tooltip"></div>
+
+
+
+<div style="background:var(--ink);padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.06);position:sticky;top:0;z-index:10;">
+  <div>
+    <p style="font-size:14px;color:rgba(255,255,255,0.6);margin:0;font-family:var(--font);">Make all three selections below to see the potential pipeline impact.</p>
+  </div>
+</div>
+
+<main class="main">
+  <div class="selector-col">
+    
+
+  <!-- TEAM SIZE -->
+  <div class="selector-block">
+    <div class="selector-label">01 &nbsp;·&nbsp; Selling team size</div>
+    <div class="btn-row">
+      <button class="preset-btn" data-group="team" data-team="7" data-quota="600" onclick="selectPreset(this,'team')">
+        <span class="btn-label">5–15 reps</span>
+      </button>
+      <button class="preset-btn" data-group="team" data-team="15" data-quota="850" onclick="selectPreset(this,'team')">
+        <span class="btn-label">15–30 reps</span>
+      </button>
+      <button class="preset-btn" data-group="team" data-team="35" data-quota="1250" onclick="selectPreset(this,'team')">
+        <span class="btn-label">30–50 reps</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ACV -->
+  <div class="selector-block">
+    <div class="selector-label">02 &nbsp;·&nbsp; Average deal size (ACV)</div>
+    <div class="btn-row acv">
+      <button class="preset-btn" data-group="acv" data-acv="25" onclick="selectPreset(this,'acv')">
+        <span class="btn-label">$25K</span>
+      </button>
+      <button class="preset-btn" data-group="acv" data-acv="50" onclick="selectPreset(this,'acv')">
+        <span class="btn-label">$50K</span>
+      </button>
+      <button class="preset-btn" data-group="acv" data-acv="75" onclick="selectPreset(this,'acv')">
+        <span class="btn-label">$75K</span>
+      </button>
+      <button class="preset-btn" data-group="acv" data-acv="100" onclick="selectPreset(this,'acv')">
+        <span class="btn-label">$100K</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MATURITY STAGE -->
+  <div class="selector-block">
+    <div class="selector-label">03 &nbsp;·&nbsp; Intelligence maturity, select closest to your current state</div>
+    <div class="btn-row stage-row">
+      <button class="preset-btn has-tip" data-group="stage" data-close="12" data-hrs="1.8" data-q="1"
+        onclick="selectPreset(this,'stage')">
+        <span class="tip-icon"
+          onmouseenter="showTip(event,'Reps decide who to engage based on their own research and instinct. Tools may exist but are not integrated into a coherent intelligence flow. What reaches a rep before they contact an account is largely their own judgment.')"
+          onmouseleave="hideTip()">?</span>
+        <span class="btn-label">Less Mature &nbsp;·<br>Rep-driven research</span>
+        <span class="btn-sub">Manual prioritization, no systematic intelligence layer</span>
+      </button>
+      <button class="preset-btn has-tip" data-group="stage" data-close="18" data-hrs="2.5" data-q="2"
+        onclick="selectPreset(this,'stage')">
+        <span class="tip-icon"
+          onmouseenter="showTip(event,'The stack has integrations. HubSpot, a sequencing tool, possibly Sales Navigator. Processes forming around pipeline management. What reaches the rep is still account lists and activity data, not synthesized insight about why to engage a specific contact at a specific account right now.')"
+          onmouseleave="hideTip()">?</span>
+        <span class="btn-label">Somewhat Mature &nbsp;·<br>Tools connected, intelligence limited</span>
+        <span class="btn-sub">Integrated stack, but reps receive activity data and account lists, not synthesized insight</span>
+      </button>
+      <button class="preset-btn has-tip" data-group="stage" data-close="24" data-hrs="3.1" data-q="3"
+        onclick="selectPreset(this,'stage')">
+        <span class="tip-icon"
+          onmouseenter="showTip(event,'Account-level intent signals (6sense, Bombora, G2, Demandbase) are feeding the process. Accounts prioritized by buying signals. Visibility is meaningfully better. But the signals are commoditized. Every competitor buys the same data. Beating target still requires adding headcount.')"
+          onmouseleave="hideTip()">?</span>
+        <span class="btn-label">More Mature &nbsp;·<br>Intent data in the stack</span>
+        <span class="btn-sub">Third-party buying signals feeding prioritization, but available to every competitor</span>
+      </button>
+    </div>
+  </div>
+
+  
+  </div>
+  <div class="output-col">
+    <!-- Empty state for results panel -->
+    <div id="results-placeholder" style="border:1.5px dashed rgba(200,112,65,0.3);border-radius:12px;padding:48px 36px;text-align:center;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(200,112,65,0.03);">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);opacity:0.7;">Potential pipeline impact</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.5;">Your results will appear here<br>once all three selections are made.</div>
+    </div>
+
+    <!-- OUTPUT -->
+    <div class="output-section" id="output-section">
+      <div class="output-eyebrow">Potential pipeline impact · annualized</div>
+      <div class="output-compare">
+        <div class="output-compare-col">
+          <div class="output-compare-label">Current pipeline</div>
+          <div class="output-compare-num neutral" id="out-baseline">—</div>
+        </div>
+        <div class="output-compare-arrow">→</div>
+        <div class="output-compare-col">
+          <div class="output-compare-label">With Redline</div>
+          <div class="output-compare-num amber" id="out-with-redline">—</div>
+        </div>
+        <div class="output-compare-col delta-col">
+          <div class="output-compare-label">Additional pipeline</div>
+          <div class="output-compare-num green" id="output-number">—</div>
+        </div>
+      </div>
+      <div class="output-chips" id="output-chips"></div>
+      <div class="output-divider"></div>
+      <div class="output-framing" id="output-framing"></div>
+    </div>
+  </div>
+</main>
+
+
+
+<script>
+// ── Tooltip ──────────────────────────────────────────────────────────
+var tt = document.getElementById('global-tooltip');
+function showTip(e, text) {
+  tt.textContent = text;
+  tt.style.display = 'block';
+  positionTip(e);
+}
+function positionTip(e) {
+  var x = e.clientX + 12;
+  var y = e.clientY + 12;
+  var w = tt.offsetWidth;
+  var vw = window.innerWidth;
+  if (x + w + 16 > vw) x = e.clientX - w - 12;
+  tt.style.left = x + 'px';
+  tt.style.top  = y + 'px';
+}
+function hideTip() { tt.style.display = 'none'; }
+document.addEventListener('mousemove', function(e) {
+  if (tt.style.display === 'block') positionTip(e);
+});
+
+// ── State ────────────────────────────────────────────────────────────
+var sel = { team: null, acv: null, stage: null };
+
+// ── Constants ────────────────────────────────────────────────────────
+var DAYS = 250, REF_HRS = 2.0, WORK_HRS = 8, MAX_SELL_FRAC = 0.80, ATTAIN = 0.47;
+var S_SCORE = 4; // fixed neutral TAM scope for V1 (s1=2, s2=2)
+
+// ── Lever 2 methodology (matches v2 public calculator) ──────────────
+// Three-dimension Landbase 2026 decomposition: +47% opp volume, +43% ACV,
+// +38% close rate, measured from no-signals (Stage 1) to account-level
+// signals (Stage 3). Capture rate shrinks as starting stage advances.
+// Redline contact-level premium applied multiplicatively at every stage.
+// 80% dampener reflects real-world execution drag.
+var LANDBASE = { vol: 0.47, acv: 0.43, close: 0.38 };
+var REDLINE_PREMIUM = 0.15;
+var DAMPENER = 0.80;
+
+function qualityStage(score) {
+  if (score <= 4) return { stage: 1, capture: 1.00 };  // Stage 1 Reactive
+  if (score <= 7) return { stage: 2, capture: 0.80 };  // Stage 2 Operationalized
+  return              { stage: 3, capture: 0.00 };     // Stage 3 Integrated
+}
+function scopeModifier(score) {
+  if (score <= 3) return 1.00;
+  if (score <= 5) return 1.15;
+  if (score <= 7) return 1.30;
+  return 1.50;
+}
+function leverTwoMultipliers(qScore, sScore) {
+  var st = qualityStage(qScore);
+  var mod = scopeModifier(sScore);
+  var vRaw = (1 + LANDBASE.vol   * st.capture) * (1 + REDLINE_PREMIUM);
+  var aRaw = (1 + LANDBASE.acv   * st.capture) * (1 + REDLINE_PREMIUM);
+  var cRaw = (1 + LANDBASE.close * st.capture) * (1 + REDLINE_PREMIUM);
+  vRaw = 1 + (vRaw - 1) * mod;
+  aRaw = 1 + (aRaw - 1) * mod;
+  cRaw = 1 + (cRaw - 1) * mod;
+  return {
+    volume: 1 + (vRaw - 1) * DAMPENER,
+    acv:    1 + (aRaw - 1) * DAMPENER,
+    close:  1 + (cRaw - 1) * DAMPENER
+  };
+}
+function deriveLever1(hrs) {
+  var rec = Math.max(1.0, Math.min(1.5, 4.0 - hrs));
+  return (hrs + rec) / hrs;
+}
+
+// All dollar values computed in K units (thousands).
+// Pipeline is derived from opps × ACV × team. Opp rate is anchored to the
+// team tier via quotaK at the $50K reference ACV; the selected ACV then
+// scales pipeline value directly. TAM scope fixed at neutral (score 4)
+// for v1 categorical mode.
+var REF_ACV = 50;
+
+function calcDelta(team, quotaK, avgDealK, closeRate, sellHrs, qVal) {
+  var qScore  = qVal * 3;  // v1 selector values 1/2/3 → qScores 3/6/9 (Stages 1/2/3)
+  var L2      = leverTwoMultipliers(qScore, S_SCORE);
+  var multVal = Math.round(deriveLever1(sellHrs) * 100) / 100;
+  var winBase = closeRate / 100;
+
+  // Baseline pipeline: anchor opp throughput to REF_ACV, scale value by selected ACV
+  var dealsPerRepRef = (quotaK * ATTAIN) / REF_ACV;
+  var oppsPerRepRef  = dealsPerRepRef / winBase;
+  var oppsPerHour    = oppsPerRepRef / (REF_HRS * DAYS);
+  var oppsPerRepB    = oppsPerHour * sellHrs * DAYS;
+  var pipelineB      = oppsPerRepB * avgDealK * team;
+
+  // Lever 1: capacity recovery multiplies opportunity volume
+  var sellDayA = Math.min(sellHrs * multVal, WORK_HRS * MAX_SELL_FRAC);
+  var capLift  = sellDayA / sellHrs;
+
+  // Lever 2: three-dimension signal quality lift on opps, ACV, close rate
+  // Pipeline = opps × ACV, so pipeline lift = capLift × L2.volume × L2.acv
+  var pipelineA = pipelineB * capLift * L2.volume * L2.acv;
+  var delta     = pipelineA - pipelineB;
+
+  return { pipelineB: pipelineB, pipelineA: pipelineA, delta: delta };
+}
+
+// ── Format ───────────────────────────────────────────────────────────
+// fmtM expects K-units (thousands). 1500 -> "$1.5M", 250 -> "$250K".
+function fmtM(k) {
+  if (k >= 1000) return '$' + (k / 1000).toFixed(1) + 'M';
+  return '$' + Math.round(k) + 'K';
+}
+
+// ── Selection ────────────────────────────────────────────────────────
+// Update which stage buttons are available based on current team selection.
+// Rule: 30-50 reps × Less Mature produces unrealistic baseline numbers
+// (pre-existing baseline model quirk), so we disable that combination.
+// If Less Mature was already selected when user shifts to 30-50, we
+// auto-advance the stage to Somewhat Mature so the output stays valid.
+function updateStageAvailability() {
+  var lessBtn = document.querySelector('[data-group="stage"][data-q="1"]');
+  var somewhatBtn = document.querySelector('[data-group="stage"][data-q="2"]');
+  if (!lessBtn || !somewhatBtn) return;
+  var is30to50 = sel.team && sel.team.team === 35;
+  if (is30to50) {
+    lessBtn.classList.add('disabled');
+    // Auto-advance if Less was the active selection
+    if (sel.stage && sel.stage.q === 1) {
+      lessBtn.classList.remove('selected');
+      somewhatBtn.classList.add('selected');
+      sel.stage = {
+        close: +somewhatBtn.dataset.close,
+        hrs: +somewhatBtn.dataset.hrs,
+        q: +somewhatBtn.dataset.q,
+        label: somewhatBtn.querySelector('.btn-label').textContent.trim(),
+        sub: somewhatBtn.querySelector('.btn-sub').textContent.trim()
+      };
+    }
+  } else {
+    lessBtn.classList.remove('disabled');
+  }
+}
+
+function selectPreset(btn, group) {
+  // Block clicks on disabled buttons
+  if (btn.classList.contains('disabled')) return;
+  // Don't fire if click originated on tooltip icon
+  document.querySelectorAll('[data-group="' + group + '"]').forEach(function(b) {
+    b.classList.remove('selected');
+  });
+  btn.classList.add('selected');
+
+  if (group === 'team') {
+    sel.team = { team: +btn.dataset.team, quotaK: +btn.dataset.quota, label: btn.querySelector('.btn-label').textContent.trim() };
+    updateStageAvailability();
+  } else if (group === 'acv') {
+    sel.acv = { acv: +btn.dataset.acv, label: btn.querySelector('.btn-label').textContent.trim() };
+  } else if (group === 'stage') {
+    sel.stage = { close: +btn.dataset.close, hrs: +btn.dataset.hrs, q: +btn.dataset.q,
+      label: btn.querySelector('.btn-label').textContent.trim(),
+      sub: btn.querySelector('.btn-sub').textContent.trim() };
+  }
+
+  var dt = document.getElementById('dot-team'); if (dt) dt.className = 'pending-dot' + (sel.team ? ' done' : '');
+  var da = document.getElementById('dot-acv'); if (da) da.className = 'pending-dot' + (sel.acv ? ' done' : '');
+  var ds = document.getElementById('dot-stage'); if (ds) ds.className = 'pending-dot' + (sel.stage ? ' done' : '');
+
+  var count = (sel.team ? 1 : 0) + (sel.acv ? 1 : 0) + (sel.stage ? 1 : 0);
+  var pf = document.getElementById('progress-fill'); if (pf) pf.style.width = (count / 3 * 100) + '%';
+
+  if (sel.team && sel.acv && sel.stage) showOutput();
+}
+
+function showOutput() {
+  // Hide placeholder when output shows
+  var placeholder = document.getElementById('results-placeholder');
+  if (placeholder) placeholder.style.display = 'none';
+
+  var result = calcDelta(
+    sel.team.team, sel.team.quotaK, sel.acv.acv,
+    sel.stage.close, sel.stage.hrs, sel.stage.q
+  );
+  // All values from calcDelta are in K-units. fmtM now expects K.
+  var pctIncrease = Math.round((result.delta / result.pipelineB) * 100);
+
+  // Directional multiple range: floor the actual multiple to the nearest 0.5
+  // below and take the next 0.5 above, so the range wraps the actual value.
+  // Handles the boundary case (exact 0.5) by shifting the low end down.
+  function multipleRange(pct) {
+    var m = pct / 100;
+    var low = Math.floor(m * 2) / 2;
+    if (low === m) low -= 0.5;
+    if (low < 0) low = 0;
+    var high = low + 0.5;
+    var fmt = function(v) {
+      return v === Math.floor(v) ? String(Math.floor(v)) : v.toFixed(1);
+    };
+    return fmt(low) + '-' + fmt(high) + 'X';
+  }
+  var rangeLabel = multipleRange(pctIncrease);
+
+  // Populate baseline and with-redline immediately
+  document.getElementById('out-baseline').textContent     = fmtM(result.pipelineB);
+  document.getElementById('out-with-redline').textContent = fmtM(result.pipelineA);
+
+  // Animate delta number
+  var el = document.getElementById('output-number');
+  var startTime = null, duration = 650;
+  function anim(ts) {
+    if (!startTime) startTime = ts;
+    var p = Math.min((ts - startTime) / duration, 1);
+    var ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = '+' + fmtM(result.delta * ease);
+    if (p < 1) requestAnimationFrame(anim);
+    else el.textContent = '+' + fmtM(result.delta);
+  }
+  requestAnimationFrame(anim);
+
+  // Selection chips
+  document.getElementById('output-chips').innerHTML = [
+    sel.team.label + ' team',
+    sel.acv.label + ' ACV',
+    sel.stage.label
+  ].map(function(t) { return '<span class="sel-chip">' + t + '</span>'; }).join('');
+
+  // Framing: directional multiple range, no fixed with-Redline dollar claim
+  document.getElementById('output-framing').innerHTML =
+    'Based on your selections, a team like yours at this stage is currently generating roughly <strong>' +
+    fmtM(result.pipelineB) + '</strong> in annual pipeline. ' +
+    'With Redline Growth, that same team could increase pipeline by <strong>' +
+    rangeLabel + '</strong>.';
+
+  // Show output, hide pending
+  var pn = document.getElementById('pending-note'); if (pn) pn.style.display = 'none';
+  var out = document.getElementById('output-section');
+  out.classList.add('visible');
+  setTimeout(function() { out.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 120);
+}
+</script>
+</body>
+</html>

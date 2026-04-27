@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Evolving RevTech Landscape — Diagram 2: The Stack | Redline Growth</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0F1117; --nav-dark:#1A1D24; --amber:#C87041; --blue:#5D7E8A;
+    --green:#8A9B72; --gold:#C9A44D; --vellum:#E8E4D8; --gray:#6E7388;
+    --graphite:#464B55; --linen:#B8A898; --surface-1:#F0EDE4; --surface-2:#FAF8F4;
+  }
+  html,body{margin:0;padding:0;background:var(--vellum);font-family:'DM Sans',sans-serif;color:var(--nav-dark);}
+  .wrap{max-width:1200px;margin:0 auto;padding:48px 40px;}
+  .meta{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(200,112,65,0.3);padding-bottom:20px;margin-bottom:40px;}
+  .meta-title{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;letter-spacing:-0.5px;color:var(--amber);}
+  .meta-sub{font-size:13px;color:var(--graphite);margin-top:4px;}
+  .meta-right{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gray);letter-spacing:0.12em;text-transform:uppercase;line-height:1.8;text-align:right;}
+
+  /* Stack grid */
+  .stack-grid{display:grid;grid-template-columns:1fr 200px 200px;grid-template-rows:repeat(6,auto);gap:10px 24px;margin-bottom:40px;}
+
+  /* Layer cards */
+  .layer-card{background:var(--surface-2);border:1px solid rgba(184,168,152,0.5);border-radius:6px;padding:14px 20px;border-left-width:3px;border-left-style:solid;}
+  .layer-l6{border-left-color:var(--gold);grid-column:1;grid-row:1;}
+  .layer-l5{border-left-color:var(--gray);grid-column:1;grid-row:2;}
+  .layer-l4{border-left-color:var(--green);grid-column:1;grid-row:3;}
+  .layer-l3{border-left-color:var(--amber);grid-column:1;grid-row:4;}
+  .layer-l2{border-left-color:var(--blue);grid-column:1;grid-row:5;}
+  .layer-l1{border-left-color:var(--graphite);grid-column:1;grid-row:6;}
+
+  .layer-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;}
+  .layer-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--gray);letter-spacing:0.08em;}
+  .layer-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--nav-dark);}
+  .layer-desc{font-size:11px;color:var(--graphite);margin-bottom:8px;line-height:1.4;}
+
+  /* Vendor pills */
+  .pills{display:flex;flex-wrap:wrap;gap:4px;}
+  .pill{display:inline-block;font-family:'DM Sans',sans-serif;font-size:11px;padding:3px 9px;border-radius:3px;background:var(--surface-1);color:var(--graphite);border:1px solid rgba(184,168,152,0.4);}
+  .pill-amber{background:rgba(200,112,65,0.12);border-color:rgba(200,112,65,0.35);color:var(--amber);font-weight:600;}
+  .pill-gold{background:rgba(201,164,77,0.1);border-color:rgba(201,164,77,0.3);color:#9B7C2D;font-weight:600;}
+  .pill-blue{background:rgba(93,126,138,0.12);border-color:rgba(93,126,138,0.3);color:var(--blue);font-weight:600;}
+  .pill-gray{background:rgba(110,115,136,0.1);border-color:rgba(110,115,136,0.25);color:var(--gray);}
+
+  /* Cross-layer categories */
+  .cross-card{border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;}
+  .cross-agentic{grid-column:2;grid-row:3 / span 4;background:rgba(110,115,136,0.06);border:1.5px dashed rgba(110,115,136,0.4);}
+  .cross-managed{grid-column:3;grid-row:2 / span 4;background:rgba(200,112,65,0.05);border:1.5px dashed rgba(200,112,65,0.4);}
+
+  .cross-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;}
+  .cross-agentic .cross-label{color:var(--gray);}
+  .cross-managed .cross-label{color:var(--amber);}
+  .cross-name{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;margin-bottom:8px;line-height:1.3;}
+  .cross-agentic .cross-name{color:var(--graphite);}
+  .cross-managed .cross-name{color:var(--amber);}
+  .cross-desc{font-size:11px;color:var(--graphite);margin-bottom:14px;line-height:1.45;}
+  .cross-pills{display:flex;flex-wrap:wrap;gap:4px;}
+  .cross-foot{margin-top:auto;padding-top:10px;border-top:1px solid rgba(184,168,152,0.4);font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--gray);letter-spacing:0.08em;text-transform:uppercase;}
+
+  /* Summary cards */
+  .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .summary-card{background:var(--surface-2);border:1px solid rgba(184,168,152,0.5);border-radius:8px;padding:24px 28px;}
+  .summary-agentic{border-left:3px solid var(--graphite);}
+  .summary-managed{border-left:3px solid var(--amber);background:rgba(200,112,65,0.04);}
+  .summary-card .lead{font-weight:600;color:var(--nav-dark);}
+  .summary-managed .lead{color:var(--amber);}
+  .summary-card .body{font-size:14px;color:var(--graphite);line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="meta">
+    <div>
+      <div class="meta-title">The Evolving RevTech Landscape</div>
+    </div>
+  </div>
+
+  <div class="stack-grid">
+
+    <!-- L6 -->
+    <div class="layer-card layer-l6">
+      <div class="layer-head"><span class="layer-num">L6</span><span class="layer-name">Analytics and Forecasting</span></div>
+      <div class="layer-desc">Pipeline visibility, revenue prediction, deal inspection</div>
+      <div class="pills"><span class="pill pill-gold">Clari + Salesloft</span><span class="pill">People.ai</span><span class="pill">Aviso</span><span class="pill">BoostUp</span></div>
+    </div>
+
+    <!-- L5 -->
+    <div class="layer-card layer-l5">
+      <div class="layer-head"><span class="layer-num">L5</span><span class="layer-name">Conversation Intelligence</span></div>
+      <div class="layer-desc">Call recording, coaching, deal signals from conversations</div>
+      <div class="pills"><span class="pill pill-gold">Gong</span><span class="pill">Chorus</span><span class="pill">Revenue.io</span><span class="pill">Fireflies.ai</span></div>
+    </div>
+
+    <!-- L4 -->
+    <div class="layer-card layer-l4">
+      <div class="layer-head"><span class="layer-num">L4</span><span class="layer-name">Sales Engagement</span></div>
+      <div class="layer-desc">Sequencing, multichannel outreach, cadence execution</div>
+      <div class="pills"><span class="pill pill-gold">Outreach</span><span class="pill pill-gold">Salesloft</span><span class="pill">Apollo</span><span class="pill">Reply.io</span><span class="pill">Instantly</span></div>
+    </div>
+
+    <!-- L3 -->
+    <div class="layer-card layer-l3">
+      <div class="layer-head"><span class="layer-num">L3</span><span class="layer-name">Intent and Signal Detection</span></div>
+      <div class="layer-desc">Buying signals, account-level triggers, intent data</div>
+      <div class="pills"><span class="pill pill-gold">6sense</span><span class="pill pill-gold">Demandbase</span><span class="pill">Bombora</span><span class="pill pill-blue">UserGems</span><span class="pill">G2 Intent</span></div>
+    </div>
+
+    <!-- L2 -->
+    <div class="layer-card layer-l2">
+      <div class="layer-head"><span class="layer-num">L2</span><span class="layer-name">Data and Contact Enrichment</span></div>
+      <div class="layer-desc">Contact databases, firmographics, waterfall enrichment</div>
+      <div class="pills"><span class="pill pill-blue">Clay</span><span class="pill pill-gold">ZoomInfo</span><span class="pill">Cognism</span><span class="pill">Lusha</span><span class="pill">Clearbit</span><span class="pill">Seamless.AI</span></div>
+    </div>
+
+    <!-- L1 -->
+    <div class="layer-card layer-l1">
+      <div class="layer-head"><span class="layer-num">L1</span><span class="layer-name">CRM</span></div>
+      <div class="layer-desc">System of record, pipeline management, deal tracking</div>
+      <div class="pills"><span class="pill pill-gold">Salesforce</span><span class="pill pill-gold">HubSpot</span><span class="pill">Dynamics 365</span><span class="pill">Pipedrive</span></div>
+    </div>
+
+    <!-- Cross-layer: Agentic Revenue OS (col 2, rows 3-6, L4 down to L1) -->
+    <div class="cross-card cross-agentic">
+      <div class="cross-label">Cross-Layer</div>
+      <div class="cross-name">Agentic Revenue OS</div>
+      <div class="cross-desc">AI-native platforms collapsing CRM, enrichment, intent, and engagement into unified agent systems</div>
+      <div class="cross-pills"><span class="pill pill-blue">Rox</span><span class="pill pill-gray">Monaco</span><span class="pill pill-gray">11x</span><span class="pill pill-gray">Artisan</span></div>
+      <div class="cross-foot">Spans L1 → L4</div>
+    </div>
+
+    <!-- Cross-layer: Managed Intelligence Partners (col 3, rows 2-5, L5 down to L2) -->
+    <div class="cross-card cross-managed">
+      <div class="cross-label">Cross-Layer</div>
+      <div class="cross-name">Managed Intelligence Partners</div>
+      <div class="cross-desc">Custom signal architecture built through collaborative discovery, deployed on infrastructure layers, managed as a service</div>
+      <div class="cross-pills"><span class="pill pill-amber">Redline Growth</span><span class="pill pill-gray">Revenue Labs</span><span class="pill pill-gray">ColdIQ</span></div>
+      <div class="cross-foot">Spans L2 → L5</div>
+    </div>
+
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card summary-agentic">
+      <div class="body"><span class="lead">Where the Agentic OS players sit:</span> Rox, Monaco, 11x, and Artisan vertically integrate across layers 1 through 4, replacing CRM, enrichment, signal detection, and outreach execution with a unified agent-driven platform. The bet is that a single system of AI agents assigned per account can outperform four to six disconnected point solutions.</div>
+    </div>
+    <div class="summary-card summary-managed">
+      <div class="body"><span class="lead">The Managed Intelligence model:</span> These solutions span layers 2 through 5, building custom signal architecture on top of infrastructure like Clay rather than replacing it. Where Agentic OS players collapse layers into a single product, a Managed Intelligence Partner makes each existing layer more effective by connecting them through a tailored reasoning layer calibrated to the client's specific ICP and competitive landscape.</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Redline Growth Advantage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   THE REDLINE GROWTH ADVANTAGE · INTERACTIVE VENN
+   Iframe-embed asset for /approach Section 1.
+   v4.0 · April 2026 · Patrick's feedback applied.
+
+   Three-circle Venn with reduced overlap so each circle has
+   breathing room. Headlines visible at rest inside each circle.
+   The amber Advantage shape is the lens where Customer Needs
+   overlaps with Redline Growth Capabilities ONLY, excluding
+   the Market Alternatives circle's contribution. Popups are
+   color-coded to their source circle and positioned spatially
+   near the region they come from.
+
+   Body background is transparent so the host iframe container's
+   styling shows through.
+   ============================================ */
+
+:root {
+  --amber:        #C87041;
+  --amber-dk:     #A85E2C;
+  --blue:         #5D7E8A;
+  --blue-dk:      #4A6873;
+  --green:        #8A9B72;
+  --green-dk:     #6F8159;
+  --crimson:      #9B1C24;
+  --linen:        #B8A898;
+  --ink:          #0F1117;
+
+  --ff-display: 'Space Grotesk', system-ui, sans-serif;
+  --ff-body:    'DM Sans', system-ui, sans-serif;
+  --ff-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  --bg:           transparent;
+  --surface-1:    #F0EDE4;
+  --surface-2:    #FAF8F4;
+  --text-1:       #1A1D24;
+  --text-2:       #464B55;
+  --text-m:       #6E7388;
+  --border-sub:   rgba(0,0,0,0.08);
+
+  /* Circle fills */
+  --comp-fill:    rgba(93,126,138,0.16);
+  --cust-fill:    rgba(138,155,114,0.18);
+  --cap-fill:     rgba(200,112,65,0.18);
+
+  /* Triple-overlap solid amber shape */
+  --sweet-fill:   #C87041;
+
+  --connector:    #9B1C24;
+  --advantage-h:  #9B1C24;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: var(--ff-body);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: color 0.3s;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.frame {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+/* ---------- Venn stage ---------- */
+.venn-stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 4px;
+}
+
+.venn-svg {
+  width: 100%;
+  max-width: 1080px;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.region {
+  cursor: pointer;
+  /* Suppress default browser focus outline on SVG region groups.
+     The base-circle hover/focus class provides the focus signal
+     via color-coded fill brightening, which is applied on both
+     mouseenter and focus events. */
+  outline: none;
+}
+
+.region:focus,
+.region:focus-visible {
+  outline: none;
+}
+
+.region-hit {
+  fill: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+.region-hit:focus,
+.region-hit:focus-visible {
+  outline: none;
+}
+
+/* Visible base circles. Brighten fill on hover/active to signal
+   the region is interactive. The hover state is applied via a
+   JS-driven class on the corresponding base circle. */
+.base-circle {
+  transition: fill 0.18s ease, filter 0.18s ease;
+}
+
+.base-circle.is-hover {
+  filter: brightness(1.05);
+}
+
+.base-circle.is-comp.is-hover { fill: rgba(93,126,138,0.28); }
+.base-circle.is-cust.is-hover { fill: rgba(138,155,114,0.30); }
+.base-circle.is-cap.is-hover  { fill: rgba(200,112,65,0.30); }
+
+
+/* Advantage lens hover: add a subtle outer glow rather than
+   changing the fill, since the fill is already solid amber. */
+.sweet-lens {
+  transition: filter 0.18s ease;
+}
+
+.sweet-lens.is-hover {
+  filter: drop-shadow(0 0 10px rgba(200,112,65,0.5)) brightness(1.06);
+}
+
+/* ---------- SVG text styles ---------- */
+.svg-eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.svg-eyebrow.is-comp { fill: var(--blue); }
+.svg-eyebrow.is-cust { fill: var(--green); }
+.svg-eyebrow.is-cap  { fill: var(--amber-dk); }
+
+.svg-headline {
+  font-family: var(--ff-display);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.3px;
+  pointer-events: none;
+}
+.svg-headline.is-comp { fill: var(--blue); }
+.svg-headline.is-cust { fill: var(--green); }
+.svg-headline.is-cap  { fill: var(--amber-dk); }
+
+.svg-cap-line {
+  font-family: var(--ff-display);
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: -0.2px;
+  fill: var(--amber-dk);
+  pointer-events: none;
+}
+
+.adv-eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  fill: var(--advantage-h);
+  pointer-events: none;
+}
+
+.adv-body {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  fill: var(--text-1);
+  pointer-events: none;
+}
+
+/* ---------- Popup panels ---------- */
+.popup-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.popup {
+  position: absolute;
+  background: var(--surface-2);
+  border: 1px solid var(--border-sub);
+  border-left-width: 3px;
+  border-left-style: solid;
+  border-radius: 0 6px 6px 0;
+  padding: 16px 18px;
+  width: 300px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18), 0 4px 10px rgba(0,0,0,0.10);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.18s ease,
+              transform 0.18s ease,
+              visibility 0.18s ease;
+  pointer-events: none;
+}
+
+
+/* Color-code popups by source region via border and tag only.
+   Background stays solid surface-2 for legibility against the
+   Venn tints behind it. */
+.popup.is-comp      { border-left-color: var(--blue);  }
+.popup.is-cust      { border-left-color: var(--green); }
+.popup.is-cap       { border-left-color: var(--amber); }
+.popup.is-advantage {
+  border-left-color: var(--amber);
+  border-left-width: 4px;
+}
+
+.popup.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.popup-tag {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.popup.is-comp .popup-tag { color: var(--blue-dk); }
+.popup.is-cust .popup-tag { color: var(--green-dk); }
+.popup.is-cap .popup-tag,
+.popup.is-advantage .popup-tag { color: var(--amber-dk); }
+
+
+.popup p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-2);
+  /* Prevent widows (single-word last lines) in modern browsers.
+     Falls back to normal wrapping where unsupported. */
+  text-wrap: pretty;
+}
+
+.popup p + p { margin-top: 8px; }
+
+/*
+   Popup positioning. With reduced circle overlap the layout is:
+
+     [Mkt Alt circle]                    [Cust Needs circle]
+                       (small overlap)
+                          [Cap circle]
+                            └── amber lens with Cust Needs
+
+   - Mkt Alt popup: anchored top-left, near its circle
+   - Cust Needs popup: anchored top-right, near its circle
+   - Capabilities popup: anchored bottom-center
+   - Advantage popup: middle-right area, near the amber lens
+     and the existing Advantage label
+*/
+.popup[data-popup="competitors"]  { top: 4%;  left: 1%;  }
+.popup[data-popup="customers"]    { top: 4%;  right: 1%; }
+.popup[data-popup="capabilities"] { bottom: 2%; left: 50%; transform: translateX(-50%) translateY(4px); }
+.popup[data-popup="capabilities"].active { transform: translateX(-50%) translateY(0); }
+.popup[data-popup="advantage"]    { top: 38%; right: 1%; width: 320px; }
+
+/* ---------- Hint ---------- */
+.hint {
+  text-align: center;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-m);
+  padding: 2px 0 6px;
+}
+.hint .glyph { color: var(--amber); margin: 0 4px; }
+
+/* ---------- Mobile fallback ---------- */
+@media (max-width: 760px) {
+  body { padding: 10px 12px; }
+  .frame { gap: 8px; }
+  .venn-svg { max-width: 100%; }
+
+  .popup-layer { position: relative; }
+  .popup {
+    position: relative;
+    inset: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100%;
+    transform: none;
+    margin-top: 8px;
+    box-shadow: none;
+    display: none;
+  }
+  .popup.active {
+    display: block;
+    transform: none;
+  }
+  .popup[data-popup="capabilities"].active { transform: none; }
+
+  .svg-headline { font-size: 13px; }
+  .svg-cap-line { font-size: 12px; }
+  .svg-eyebrow { font-size: 9px; }
+  .adv-eyebrow { font-size: 9px; }
+  .adv-body { font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <div class="venn-stage">
+
+    <!--
+      Venn diagram SVG.
+      viewBox 0 0 1080 760 with reduced circle overlap.
+
+      Circle geometry (circles sized to give each ~25% breathing
+      space and only modest overlap with neighbors):
+
+        Mkt Alt     center (260, 250) r=210
+        Cust Needs  center (640, 250) r=210
+        Capabilities center (450, 480) r=210
+
+      The amber Advantage shape is rendered by:
+        1. Drawing the Capabilities circle as a base amber fill
+        2. Clipping it to the Customer Needs circle (intersection)
+        3. Masking out the Market Alternatives circle (subtraction)
+
+      Result: amber appears only where Cust Needs ∩ Capabilities
+      AND the point is NOT inside Market Alternatives. This is
+      the lens shape on the RIGHT side of the central overlap,
+      per Patrick's spec.
+    -->
+    <svg class="venn-svg" viewBox="0 0 1080 760" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="The Redline Growth Advantage Venn diagram. Three overlapping circles represent Market Alternatives, Customer Needs, and Redline Growth Capabilities. The amber shape where Customer Needs and Redline Growth Capabilities intersect, outside Market Alternatives, is The Redline Growth Advantage.">
+
+      <defs>
+        <!-- Clip to inside Customer Needs circle -->
+        <clipPath id="clip-cust">
+          <circle cx="640" cy="250" r="210" />
+        </clipPath>
+
+        <!-- Mask: white = visible, black = hidden.
+             Start fully white, then paint black inside the
+             Market Alternatives circle to subtract that region. -->
+        <mask id="mask-not-comp" maskUnits="userSpaceOnUse" x="0" y="0" width="1080" height="760">
+          <rect x="0" y="0" width="1080" height="760" fill="white" />
+          <circle cx="260" cy="250" r="210" fill="black" />
+        </mask>
+      </defs>
+
+      <!-- Three primary circles (visible base layers) -->
+
+      <!-- Market Alternatives · top-left · blue -->
+      <circle class="base-circle is-comp" data-base="competitors"
+              cx="260" cy="250" r="210"
+              fill="var(--comp-fill)" />
+
+      <!-- Customer Needs · top-right · green -->
+      <circle class="base-circle is-cust" data-base="customers"
+              cx="640" cy="250" r="210"
+              fill="var(--cust-fill)" />
+
+      <!-- Redline Growth Capabilities · bottom-center · amber base -->
+      <circle class="base-circle is-cap" data-base="capabilities"
+              cx="450" cy="480" r="210"
+              fill="var(--cap-fill)" />
+
+      <!-- Solid amber Advantage shape:
+           Capabilities circle clipped by Customer Needs (=> intersection)
+           then masked to exclude Market Alternatives (=> subtraction). -->
+      <g class="sweet-lens" data-base="advantage" clip-path="url(#clip-cust)" mask="url(#mask-not-comp)">
+        <circle cx="450" cy="480" r="210" fill="var(--sweet-fill)" />
+      </g>
+
+      <!--
+        Text labels.
+        Positioned within the non-overlapping interior of each
+        circle, well clear of the edges per Patrick's spec.
+      -->
+
+      <!-- Market Alternatives labels (centered around 180, 215) -->
+      <text class="svg-eyebrow is-comp" x="180" y="170" text-anchor="middle">Market Alternatives</text>
+      <text class="svg-headline is-comp" x="180" y="240" text-anchor="middle">Three models,</text>
+      <text class="svg-headline is-comp" x="180" y="262" text-anchor="middle">same gap.</text>
+
+      <!-- Customer Needs labels (centered around 720, 215) -->
+      <text class="svg-eyebrow is-cust" x="720" y="170" text-anchor="middle">Customer Needs</text>
+      <text class="svg-headline is-cust" x="720" y="240" text-anchor="middle">Sellers want to sell,</text>
+      <text class="svg-headline is-cust" x="720" y="262" text-anchor="middle">not research.</text>
+
+      <!-- Capabilities labels (centered around 450, 490) -->
+      <text class="svg-eyebrow is-cap" x="450" y="500" text-anchor="middle">Redline Growth Capabilities</text>
+      <text class="svg-cap-line" x="450" y="545" text-anchor="middle">Clay-native architecture.</text>
+      <text class="svg-cap-line" x="450" y="570" text-anchor="middle">Practitioner domain expertise.</text>
+      <text class="svg-cap-line" x="450" y="595" text-anchor="middle">Managed subscription delivery.</text>
+
+      <!--
+        Connector + Advantage label.
+        Connector points from the right edge of the amber lens
+        (approximately 595, 410) out to the label anchor on
+        the right.
+      -->
+      <line x1="595" y1="410" x2="800" y2="410"
+            stroke="var(--connector)" stroke-width="1.5" />
+
+      <text class="adv-eyebrow" x="810" y="400">The Redline Growth Advantage</text>
+
+      <text class="adv-body" x="810" y="428">
+        <tspan x="810" dy="0">A subscription based service</tspan>
+        <tspan x="810" dy="18">combining practitioner expertise</tspan>
+        <tspan x="810" dy="18">with signal architecture to</tspan>
+        <tspan x="810" dy="18">produce custom targeting,</tspan>
+        <tspan x="810" dy="18">context, and timing that</tspan>
+        <tspan x="810" dy="18">competitors cannot replicate.</tspan>
+      </text>
+
+      <!-- ============================================
+           HIT TARGETS (transparent overlays for hover/click)
+           ============================================ -->
+
+      <!-- Market Alternatives hit -->
+      <g class="region" data-target="competitors" tabindex="0" role="button" aria-label="Market Alternatives">
+        <circle class="region-hit" cx="260" cy="250" r="210" />
+      </g>
+
+      <!-- Customer Needs hit -->
+      <g class="region" data-target="customers" tabindex="0" role="button" aria-label="Customer Needs">
+        <circle class="region-hit" cx="640" cy="250" r="210" />
+      </g>
+
+      <!-- Redline Growth Capabilities hit -->
+      <g class="region" data-target="capabilities" tabindex="0" role="button" aria-label="Redline Growth Capabilities">
+        <circle class="region-hit" cx="450" cy="480" r="210" />
+      </g>
+
+      <!-- Advantage hit: ellipse covering the amber lens shape.
+           Lens centroid sits roughly at (550, 380). -->
+      <g class="region" data-target="advantage" tabindex="0" role="button" aria-label="The Redline Growth Advantage">
+        <ellipse class="region-hit" cx="555" cy="385" rx="55" ry="60" />
+      </g>
+
+    </svg>
+
+    <!-- Popups (color-coded, positioned near source) -->
+    <div class="popup-layer" id="popupLayer">
+
+      <div class="popup is-comp" data-popup="competitors">
+        <div class="popup-tag">Market Alternatives</div>
+        <p>Platform vendors sell data for users to make sense of. They don't combine practitioner expertise with signal architecture. Every competitor gets the same&nbsp;data.</p>
+        <p>Outbound agencies run low-return, broad messaging sequences. They don't build durable infrastructure or enable front-line&nbsp;reps.</p>
+        <p>DIY approaches require 4 to 6 months and significant talent investment. Most stall&nbsp;out.</p>
+      </div>
+
+      <div class="popup is-cust" data-popup="customers">
+        <div class="popup-tag">Customer Needs</div>
+        <p>Revenue leaders at growth-focused B2B companies need intelligence infrastructure that frees their sellers to spend more of their time&nbsp;selling.</p>
+        <p>Revenue teams burn 50%+ of their day on manual research before they ever make a call. Reps want action-ready output delivered to them, not assembled by them: the right account, the right contact, with the right context, at the right&nbsp;time.</p>
+      </div>
+
+      <div class="popup is-cap" data-popup="capabilities">
+        <div class="popup-tag">Redline Growth Capabilities</div>
+        <p>Clay-native technical expertise: waterfall enrichment, comprehensive signal detection, real-time custom scoring, ICP-calibrated&nbsp;prioritization.</p>
+        <p>Practitioner expertise from operator backgrounds: GTM engineers with proven experience building and running revenue organizations who understand what a seller needs to be successful and how they want intelligence&nbsp;delivered.</p>
+        <p>Managed subscription delivery: build, deploy, and operate. Selling time is recaptured and fueled by better intelligence that improves over time as new data informs the&nbsp;engine.</p>
+      </div>
+
+      <div class="popup is-advantage" data-popup="advantage">
+        <div class="popup-tag">The Redline Growth Advantage</div>
+        <p>Redline Growth clients want intelligence infrastructure that frees their sellers to sell. Competitors either sell tools or run campaigns. Neither delivers a managed subscription combining practitioner expertise with signal&nbsp;architecture.</p>
+        <p>Redline builds and manages the intelligence engines that deliver high-quality, relevant insight. Clients recapture precious selling time to manage more outreach, convert more leads, and grow more&nbsp;relationships.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Hint -->
+  <div class="hint">
+    <span class="glyph">→</span>
+    <span>Click any region for details</span>
+    <span class="glyph">←</span>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ---------- Region interaction ----------
+  // Hover highlights the corresponding base circle (visual only).
+  // Click toggles the popup. The two are fully decoupled.
+
+  var regions = document.querySelectorAll('.region');
+  var popups = document.querySelectorAll('.popup');
+  var bases = document.querySelectorAll('.base-circle, .sweet-lens');
+
+  function setHover(targetId, on) {
+    bases.forEach(function(b) {
+      if (b.getAttribute('data-base') === targetId) {
+        if (on) b.classList.add('is-hover');
+        else b.classList.remove('is-hover');
+      }
+    });
+  }
+
+  function clearHover() {
+    bases.forEach(function(b) { b.classList.remove('is-hover'); });
+  }
+
+  function showPopup(targetId) {
+    popups.forEach(function(p) {
+      if (p.getAttribute('data-popup') === targetId) {
+        p.classList.add('active');
+      } else {
+        p.classList.remove('active');
+      }
+    });
+  }
+
+  function hideAllPopups() {
+    popups.forEach(function(p) { p.classList.remove('active'); });
+  }
+
+  function togglePopup(targetId) {
+    var popup = document.querySelector('.popup[data-popup="' + targetId + '"]');
+    if (popup && popup.classList.contains('active')) {
+      hideAllPopups();
+    } else {
+      showPopup(targetId);
+    }
+  }
+
+  regions.forEach(function(region) {
+    var targetId = region.getAttribute('data-target');
+
+    // Hover: highlight only, no popup
+    region.addEventListener('mouseenter', function() {
+      setHover(targetId, true);
+    });
+    region.addEventListener('mouseleave', function() {
+      setHover(targetId, false);
+    });
+
+    // Click: toggle popup
+    region.addEventListener('click', function(e) {
+      e.stopPropagation();
+      togglePopup(targetId);
+    });
+
+    // Keyboard: Enter/Space toggles popup (matches click behavior)
+    region.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        togglePopup(targetId);
+      }
+    });
+
+    // Focus: highlight the region (parallel to hover)
+    region.addEventListener('focus', function() {
+      setHover(targetId, true);
+    });
+    region.addEventListener('blur', function() {
+      setHover(targetId, false);
+    });
+  });
+
+  // Click outside any region or popup closes popups
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.region') && !e.target.closest('.popup')) {
+      hideAllPopups();
+    }
+  });
+
+  // ESC closes popups and clears any hover state
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      hideAllPopups();
+      clearHover();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

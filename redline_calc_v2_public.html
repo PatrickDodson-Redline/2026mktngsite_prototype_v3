@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Impact Calculator (Tailored) — Redline Growth</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --amber:        #C87041;
+  --amber-dark:   #A85E2C;
+  --amber-light:  #D69471;
+  --amber-faint:  #FAF1EC;
+  --blue:         #5D7E8A;
+  --blue-dark:    #466B72;
+  --blue-faint:   #EFF2F3;
+  --green:        #8A9B72;
+  --green-dark:   #6A7B58;
+  --green-faint:  #F3F5F1;
+  --vellum:       #E8E4D8;
+  --vellum-dark:  #D4CFC4;
+  --graphite:     #464B55;
+  --ink:          #1A1D24;
+  --muted:        #6E7380;
+  --surface-1:    #F0EDE4;
+  --surface-2:    #FAF8F4;
+  --border:       rgba(0,0,0,0.07);
+  --border-mid:   rgba(0,0,0,0.12);
+  --font:         'DM Sans', sans-serif;
+  --mono:         'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--surface-1); color: var(--ink); min-height: 100vh; }
+
+/* ── NAV ──────────────────────────────────────────────────── */
+.nav { background: var(--ink); padding: 0 40px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.16em; color: var(--amber); text-transform: uppercase; text-decoration: none; }
+.nav-badge { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; }
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero { background: var(--ink); padding: 56px 40px 48px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.hero-inner { max-width: 860px; margin: 0 auto; }
+.hero-eyebrow { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; }
+.hero-headline { font-size: 38px; font-weight: 600; line-height: 1.15; color: #fff; letter-spacing: -0.5px; margin-bottom: 16px; }
+.hero-headline em { font-style: italic; color: var(--amber); font-weight: 300; }
+.hero-body { font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.7; max-width: 580px; margin-bottom: 24px; }
+.hero-tier-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.tier-pip { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; padding: 5px 10px; border-radius: 3px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.08); text-decoration: none; }
+.tier-pip.active { background: rgba(200,112,65,0.15); color: var(--amber); border-color: rgba(200,112,65,0.35); }
+
+/* ── MAIN ─────────────────────────────────────────────────── */
+.main { max-width: 860px; margin: 0 auto; padding: 44px 40px 80px; }
+
+/* ── PANEL ────────────────────────────────────────────────── */
+.panel {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px 32px;
+  margin-bottom: 16px;
+}
+.panel-eyebrow { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 4px; }
+.panel-title { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.panel-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+
+/* ── INPUT GRID ───────────────────────────────────────────── */
+.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+.input-label { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.input-row { display: flex; align-items: center; gap: 10px; }
+.input-val { font-size: 18px; font-weight: 600; color: var(--ink); min-width: 56px; }
+.input-val.has-prefix::before { content: '$'; font-size: 13px; font-weight: 400; color: var(--muted); }
+.input-val.has-suffix::after { content: attr(data-suffix); font-size: 12px; font-weight: 400; color: var(--muted); }
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px; border-radius: 2px;
+  background: var(--vellum); outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--amber); border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+input[type=range]::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--amber); border: 2px solid #fff;
+}
+.input-hint { font-size: 11px; color: var(--muted); }
+
+/* ── ASSESSMENT ───────────────────────────────────────────── */
+.assessment-q { margin-bottom: 20px; }
+.q-label-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
+.q-num { font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--amber); letter-spacing: 0.1em; margin-right: 6px; }
+.q-label { font-size: 13px; font-weight: 600; color: var(--ink); }
+.q-current { font-family: var(--mono); font-size: 10px; color: var(--blue); letter-spacing: 0.04em; }
+.q-tip { font-size: 11px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
+.chip-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font-size: 11px; font-weight: 500; padding: 6px 11px; border-radius: 6px;
+  border: 1.5px solid var(--border-mid); color: var(--graphite);
+  cursor: pointer; background: var(--surface-1); transition: all 0.12s;
+  font-family: var(--font);
+}
+.chip:hover { border-color: var(--amber-light); color: var(--ink); }
+.chip.on { border-color: var(--amber); background: var(--amber-faint); color: var(--amber-dark); font-weight: 600; }
+.q-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+.q-divider-label { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+
+/* ── DERIVE NOTE ──────────────────────────────────────────── */
+.derive-note {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--blue-faint); border: 1px solid rgba(93,126,138,0.2);
+  border-radius: 6px; padding: 10px 14px; margin-top: 16px;
+}
+.derive-note-text { font-size: 11px; color: var(--blue-dark); line-height: 1.5; }
+.derive-badge { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--blue); background: rgba(93,126,138,0.12); padding: 3px 8px; border-radius: 3px; white-space: nowrap; }
+
+/* ── CALC BUTTON ──────────────────────────────────────────── */
+.calc-btn {
+  width: 100%; padding: 16px; border-radius: 8px;
+  background: var(--amber); color: #fff; border: none;
+  font-family: var(--font); font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s; margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.calc-btn:hover { background: var(--amber-dark); }
+.calc-btn:disabled { background: var(--vellum-dark); color: var(--muted); cursor: not-allowed; }
+
+/* ── OUTPUT PANEL ─────────────────────────────────────────── */
+.output-panel {
+  background: var(--ink); border-radius: 12px; padding: 36px 32px;
+  margin-top: 8px; opacity: 0; transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: none;
+}
+.output-panel.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.output-eyebrow { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 8px; }
+.output-number { font-size: 52px; font-weight: 700; color: var(--amber); letter-spacing: -1px; line-height: 1; margin-bottom: 6px; }
+.output-sublabel { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
+.output-compare {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.output-compare-col { display: flex; flex-direction: column; gap: 6px; }
+.delta-col { border-left: 1px solid rgba(255,255,255,0.1); padding-left: 16px; }
+.output-compare-label {
+  font-family: var(--mono); font-size: 9px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3);
+}
+.output-compare-num {
+  font-size: 34px; font-weight: 700; letter-spacing: -0.5px;
+  line-height: 1; color: rgba(255,255,255,0.45);
+}
+.output-compare-num.amber { color: var(--amber); }
+.output-compare-num.green { color: var(--green); }
+.output-compare-arrow { font-size: 20px; color: rgba(255,255,255,0.2); margin-top: 18px; flex-shrink: 0; }
+.sc-single {
+  display: flex; align-items: baseline; gap: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px; padding: 14px 16px; margin-bottom: 8px;
+}
+.sc-single .sc-lbl {
+  font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.3);
+}
+.sc-single .sc-val { font-size: 20px; font-weight: 700; }
+.output-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 24px 0; }
+.pct-line { font-size: 16px; color: rgba(255,255,255,0.7); text-align: center; margin: 18px 0 4px; line-height: 1.5; }
+.pct-line strong { color: var(--green); font-weight: 700; font-size: 18px; }
+
+.lever-block { margin: 24px 0 16px; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; }
+.lever-block-title { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+.lever-row { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.lever-row:last-child { border-bottom: none; padding-bottom: 2px; }
+.lever-row-combined { margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.12); }
+.lever-row-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.lever-row-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); }
+.lever-tag { display: inline-block; font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; margin-right: 8px; vertical-align: 1px; }
+.lever-tag.l1 { background: rgba(93,126,138,0.18); color: var(--blue); border: 1px solid rgba(93,126,138,0.3); }
+.lever-tag.l2 { background: rgba(138,155,114,0.18); color: var(--green); border: 1px solid rgba(138,155,114,0.3); }
+.lever-tag.combined { background: rgba(200,112,65,0.18); color: var(--amber); border: 1px solid rgba(200,112,65,0.35); }
+.lever-row-delta { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--amber); }
+.lever-row-combined .lever-row-delta { font-size: 16px; }
+.lever-row-nums { font-family: var(--mono); font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 6px; }
+.lever-row-combined .lever-row-nums { font-size: 17px; color: #fff; }
+.lever-arrow { color: rgba(255,255,255,0.35); margin: 0 6px; }
+.lever-row-sub { font-size: 11px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+
+/* ── BREAKDOWN ────────────────────────────────────────────── */
+.breakdown-title { font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+.breakdown-table { width: 100%; border-collapse: collapse; }
+.breakdown-table th {
+  font-family: var(--mono); font-size: 9px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.3);
+  padding: 6px 0; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.breakdown-table th:not(:first-child) { text-align: right; }
+.breakdown-table td {
+  padding: 11px 0; font-size: 13px; color: rgba(255,255,255,0.55);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.breakdown-table td:not(:first-child) { text-align: right; font-weight: 500; }
+.breakdown-table .td-before { color: rgba(255,255,255,0.4); }
+.breakdown-table .td-after { color: var(--amber); }
+.breakdown-table .td-after.blue { color: var(--blue); }
+.breakdown-table .td-after.green { color: var(--green); }
+.breakdown-table tr.highlight td { }
+.breakdown-table tr.highlight td:first-child { font-weight: 600; color: rgba(255,255,255,0.8); }
+
+/* summary card colors */
+.sc-val.amber { color: var(--amber); }
+.sc-val.green { color: var(--green); }
+.sc-val.blue  { color: var(--blue); }
+
+/* ── CREDIBILITY NOTE ─────────────────────────────────────── */
+.cred-note { font-size: 11px; color: rgba(255,255,255,0.3); line-height: 1.6; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); }
+
+/* ── CTA ──────────────────────────────────────────────────── */
+.cta-block { margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); }
+.cta-headline { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+.cta-sub { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 16px; line-height: 1.6; }
+.cta-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--amber); color: #fff; font-family: var(--font);
+  font-size: 14px; font-weight: 600; padding: 13px 24px; border-radius: 7px;
+  text-decoration: none; transition: background 0.15s;
+}
+.cta-primary:hover { background: var(--amber-dark); }
+
+/* ── FOOTER ───────────────────────────────────────────────── */
+.footer { border-top: 1px solid var(--border); padding: 24px 40px; display: flex; align-items: center; justify-content: space-between; background: var(--surface-2); }
+.footer-copy { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+.footer-note { font-size: 11px; color: var(--muted); max-width: 480px; text-align: right; line-height: 1.5; }
+
+@media (max-width: 640px) {
+  .hero, .main { padding-left: 20px; padding-right: 20px; }
+  .hero-headline { font-size: 28px; }
+  .input-grid { grid-template-columns: 1fr; }
+  .summary-cards { grid-template-columns: 1fr; }
+  .output-number { font-size: 38px; }
+  .footer { flex-direction: column; gap: 12px; }
+  .footer-note { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+
+
+<div style="background:var(--ink);padding:20px 40px;border-bottom:1px solid rgba(255,255,255,0.06);">
+  <div style="max-width:860px;margin:0 auto;">
+    <p style="font-size:14px;color:rgba(255,255,255,0.6);margin:0;font-family:var(--font);">Enter your team&#x2019;s actual numbers and answer five quick questions about your current selling intelligence. The model returns a pipeline impact potential specific to your situation.</p>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- BASELINE INPUTS -->
+  <div class="panel">
+    <div class="panel-eyebrow">Section 01</div>
+    <div class="panel-title">Current state baseline</div>
+    <div class="panel-desc">Set your team's current numbers. These represent your operation before any change to the intelligence layer.</div>
+
+    <div class="input-grid">
+      <div class="input-group">
+        <div class="input-label">Team size (reps)</div>
+        <div class="input-row">
+          <div class="input-val" id="oTeam">8</div>
+        </div>
+        <input type="range" min="2" max="60" step="1" value="8" id="iTeam" oninput="setVal('oTeam',this.value,'','')">
+        <div class="input-hint">Quota-carrying reps</div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Avg deal size (ACV)</div>
+        <div class="input-row">
+          <div class="input-val" id="oACV">$50K</div>
+        </div>
+        <input type="range" min="10" max="200" step="5" value="50" id="iACV" oninput="setACV(this.value)">
+        <div class="input-hint">Annual contract value</div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Deals per rep per year</div>
+        <div class="input-row">
+          <div class="input-val" id="oDeals">12</div>
+        </div>
+        <input type="range" min="4" max="60" step="1" value="12" id="iDeals" oninput="setVal('oDeals',this.value,'','')">
+        <div class="input-hint">Closed won target</div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-label">Close rate</div>
+        <div class="input-row">
+          <div class="input-val" id="oClose">20%</div>
+        </div>
+        <input type="range" min="5" max="55" step="1" value="20" id="iClose" oninput="setVal('oClose',this.value,'','%')">
+        <div class="input-hint">Qualified opps to closed won</div>
+      </div>
+
+      <div class="input-group" style="grid-column: 1 / -1;">
+        <div class="input-label">Active outreach hrs / day (per rep)</div>
+        <div class="input-row">
+          <div class="input-val" id="oHrs">2.8 hrs</div>
+        </div>
+        <input type="range" min="0.5" max="5.0" step="0.1" value="2.8" id="iHrs" oninput="setHrs(this.value)">
+        <div class="input-hint">Time per rep on actual outreach — not admin, CRM, or meetings</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUALITY ASSESSMENT -->
+  <div class="panel">
+    <div class="panel-eyebrow">Section 02 · Pipeline Quality Assessment</div>
+    <div class="panel-title">How does your selling intelligence work today?</div>
+    <div class="panel-desc">Three questions on intelligence quality, two on your market scope. The assessment shapes the quality dimension of your output.</div>
+
+    <!-- Q1 -->
+    <div class="assessment-q">
+      <div class="q-label-row">
+        <div><span class="q-num">Q1</span><span class="q-label">Signal infrastructure</span></div>
+        <div class="q-current" id="oQ1">Firmographic filters</div>
+      </div>
+      <div class="q-tip">How does your team identify which accounts to prioritize?</div>
+      <div class="chip-row">
+        <span class="chip" data-q="q1" data-v="1" onclick="setQ(this,'q1',1)">Manual research</span>
+        <span class="chip on" data-q="q1" data-v="2" onclick="setQ(this,'q1',2)">Firmographic filters</span>
+        <span class="chip" data-q="q1" data-v="3" onclick="setQ(this,'q1',3)">Account intent</span>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="assessment-q">
+      <div class="q-label-row">
+        <div><span class="q-num">Q2</span><span class="q-label">Intelligence state</span></div>
+        <div class="q-current" id="oQ2">Account lists</div>
+      </div>
+      <div class="q-tip">What does account and contact intelligence look like when it reaches reps?</div>
+      <div class="chip-row">
+        <span class="chip" data-q="q2" data-v="1" onclick="setQ(this,'q2',1)">Raw inputs</span>
+        <span class="chip on" data-q="q2" data-v="2" onclick="setQ(this,'q2',2)">Account lists</span>
+        <span class="chip" data-q="q2" data-v="3" onclick="setQ(this,'q2',3)">Annotated accounts</span>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="assessment-q">
+      <div class="q-label-row">
+        <div><span class="q-num">Q3</span><span class="q-label">Knowledge compounding</span></div>
+        <div class="q-current" id="oQ3">Ad hoc sharing</div>
+      </div>
+      <div class="q-tip">How does selling intelligence scale across your revenue team?</div>
+      <div class="chip-row">
+        <span class="chip" data-q="q3" data-v="1" onclick="setQ(this,'q3',1)">Siloed</span>
+        <span class="chip on" data-q="q3" data-v="2" onclick="setQ(this,'q3',2)">Ad hoc sharing</span>
+        <span class="chip" data-q="q3" data-v="3" onclick="setQ(this,'q3',3)">Documented playbooks</span>
+      </div>
+    </div>
+
+    <hr class="q-divider">
+    <div class="q-divider-label">TAM scope</div>
+
+    <!-- S1 -->
+    <div class="assessment-q">
+      <div class="q-label-row">
+        <div><span class="q-num">S1</span><span class="q-label">Universe size</span></div>
+        <div class="q-current" id="oS1">15K–50K</div>
+      </div>
+      <div class="q-tip">How large is your active target universe of qualified accounts?</div>
+      <div class="chip-row">
+        <span class="chip" data-q="s1" data-v="1" onclick="setQ(this,'s1',1)">Under 15K</span>
+        <span class="chip on" data-q="s1" data-v="2" onclick="setQ(this,'s1',2)">15K–50K</span>
+        <span class="chip" data-q="s1" data-v="3" onclick="setQ(this,'s1',3)">50K–100K</span>
+        <span class="chip" data-q="s1" data-v="4" onclick="setQ(this,'s1',4)">100K+</span>
+      </div>
+    </div>
+
+    <!-- S2 -->
+    <div class="assessment-q" style="margin-bottom: 0;">
+      <div class="q-label-row">
+        <div><span class="q-num">S2</span><span class="q-label">Revenue concentration</span></div>
+        <div class="q-current" id="oS2">Mixed, leaning simple</div>
+      </div>
+      <div class="q-tip">Where does your revenue concentration fall on the simple-to-complex account spectrum?</div>
+      <div class="chip-row">
+        <span class="chip" data-q="s2" data-v="1" onclick="setQ(this,'s2',1)">Mostly simple</span>
+        <span class="chip on" data-q="s2" data-v="2" onclick="setQ(this,'s2',2)">Mixed, leaning simple</span>
+        <span class="chip" data-q="s2" data-v="3" onclick="setQ(this,'s2',3)">Mixed, leaning complex</span>
+        <span class="chip" data-q="s2" data-v="4" onclick="setQ(this,'s2',4)">Mostly complex</span>
+      </div>
+    </div>
+
+    <div class="derive-note" style="margin-top: 20px;">
+      <span class="derive-badge" id="derive-badge">Q score: 6/9</span>
+      <span class="derive-note-text">Your assessment responses determine the quality multiplier applied to your pipeline. The model maps your score to a maturity band and derives the lever values — you don't set them directly.</span>
+    </div>
+  </div>
+
+  <!-- CALCULATE BUTTON -->
+  <button class="calc-btn" id="calc-btn" onclick="calculate()">
+    Calculate my pipeline impact &nbsp;→
+  </button>
+
+  <!-- OUTPUT -->
+  <div class="output-panel" id="output-panel">
+
+    <div class="output-eyebrow">Potential pipeline impact · annualized</div>
+    <div class="output-compare">
+      <div class="output-compare-col">
+        <div class="output-compare-label">Current pipeline</div>
+        <div class="output-compare-num neutral" id="out-pipe-b">—</div>
+      </div>
+      <div class="output-compare-arrow">→</div>
+      <div class="output-compare-col">
+        <div class="output-compare-label">With Redline</div>
+        <div class="output-compare-num amber" id="out-pipe-a">—</div>
+      </div>
+      <div class="output-compare-col delta-col">
+        <div class="output-compare-label">Additional pipeline</div>
+        <div class="output-compare-num green" id="out-delta">—</div>
+      </div>
+    </div>
+    <div class="pct-line" id="out-pct">—</div>
+
+    <div class="lever-block">
+      <div class="lever-block-title">How the two levers work together</div>
+      <div class="lever-row">
+        <div class="lever-row-head">
+          <div class="lever-row-label"><span class="lever-tag l1">Lever 1</span> Capacity recovered</div>
+          <div class="lever-row-delta" id="lv1-pct">—</div>
+        </div>
+        <div class="lever-row-nums"><span id="lv1-b">—</span> <span class="lever-arrow">→</span> <span id="lv1-a">—</span></div>
+        <div class="lever-row-sub">Driven by your Section 01 outreach hours. Reps reclaim research time for active selling.</div>
+      </div>
+      <div class="lever-row">
+        <div class="lever-row-head">
+          <div class="lever-row-label"><span class="lever-tag l2">Lever 2</span> Signal quality</div>
+          <div class="lever-row-delta" id="lv2-pct">—</div>
+        </div>
+        <div class="lever-row-nums"><span id="lv2-b">—</span> <span class="lever-arrow">→</span> <span id="lv2-a">—</span></div>
+        <div class="lever-row-sub">Driven by your Section 02 assessment. Better intelligence means more opportunities, larger deals, higher close rates.</div>
+      </div>
+      <div class="lever-row lever-row-combined">
+        <div class="lever-row-head">
+          <div class="lever-row-label"><span class="lever-tag combined">Combined</span> Both levers together</div>
+          <div class="lever-row-delta" id="lvc-pct">—</div>
+        </div>
+        <div class="lever-row-nums"><span id="lvc-b">—</span> <span class="lever-arrow">→</span> <span id="lvc-a">—</span></div>
+        <div class="lever-row-sub">The levers multiply, not add. Lever 1's capacity gain produces more opportunities; Lever 2 makes each opportunity worth more. Running them together produces the full potential impact.</div>
+      </div>
+    </div>
+
+    <div class="sc-single">
+      <div class="sc-lbl">Revenue potential</div>
+      <div class="sc-val green" id="out-rev-delta">—</div>
+    </div>
+
+    <div class="output-divider"></div>
+
+    <!-- Breakdown -->
+    <div class="breakdown-title">Performance breakdown · before and after</div>
+    <table class="breakdown-table">
+      <thead>
+        <tr>
+          <th style="width:44%">Dimension</th>
+          <th>Current state</th>
+          <th>With Redline</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Active outreach hrs / yr (team)</td>
+          <td class="td-before" id="bd-hrs-b">—</td>
+          <td class="td-after blue" id="bd-hrs-a">—</td>
+        </tr>
+        <tr>
+          <td>Opportunities generated / yr (team)</td>
+          <td class="td-before" id="bd-opps-b">—</td>
+          <td class="td-after blue" id="bd-opps-a">—</td>
+        </tr>
+        <tr class="highlight">
+          <td>Pipeline value</td>
+          <td class="td-before" id="bd-pipe-b">—</td>
+          <td class="td-after amber" id="bd-pipe-a">—</td>
+        </tr>
+        <tr>
+          <td>Close rate (qualified opportunities)</td>
+          <td class="td-before" id="bd-close-b">—</td>
+          <td class="td-after green" id="bd-close-a">—</td>
+        </tr>
+        <tr class="highlight">
+          <td>Potential revenue</td>
+          <td class="td-before" id="bd-rev-b">—</td>
+          <td class="td-after green" id="bd-rev-a">—</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="cred-note">Figures are directional projections modeled against published B2B sales benchmarks. Actual results depend on market conditions, team execution, engagement scope, and the rate at which pre-signal pipeline is turned over and replaced with signal-generated opportunities.</div>
+
+    <!-- CTA -->
+
+    </div>
+
+  </div>
+
+</main>
+
+
+
+<script>
+// ── State ────────────────────────────────────────────────────────
+var q1=2, q2=2, q3=2, s1=2, s2=2;
+var Q1_LABELS = ['','Manual research','Firmographic filters','Account intent'];
+var Q2_LABELS = ['','Raw inputs','Account lists','Annotated accounts'];
+var Q3_LABELS = ['','Siloed','Ad hoc sharing','Documented playbooks'];
+var S1_LABELS = ['','Under 15K','15K–50K','50K–100K','100K+'];
+var S2_LABELS = ['','Mostly simple','Mixed, leaning simple','Mixed, leaning complex','Mostly complex'];
+
+// ── Constants ────────────────────────────────────────────────────
+var DAYS=250, REF_HRS=2.0, WORK_HRS=8, MAX_SELL_FRAC=0.80, ATTAIN=0.47;
+
+// ── Helpers ──────────────────────────────────────────────────────
+// fmtM expects K-units (thousands). 1500 -> "$1.5M", 250 -> "$250K".
+function fmtM(k) {
+  if (k >= 1000) return '$' + (k / 1000).toFixed(1) + 'M';
+  return '$' + Math.round(k) + 'K';
+}
+function fmtN(v) { return Math.round(v).toLocaleString(); }
+function fmtHrs(v) { return Math.round(v).toLocaleString() + ' hrs'; }
+function pct(v) { return Math.round(v*100) + '%'; }
+
+function setVal(id, v, prefix, suffix) {
+  document.getElementById(id).textContent = (prefix||'') + v + (suffix||'');
+}
+function setACV(v) { document.getElementById('oACV').textContent = '$' + v + 'K'; }
+function setHrs(v) { document.getElementById('oHrs').textContent = parseFloat(v).toFixed(1) + ' hrs'; }
+
+function setQ(chip, group, val) {
+  document.querySelectorAll('[data-q="' + group + '"]').forEach(function(c){ c.classList.remove('on'); });
+  chip.classList.add('on');
+  if(group==='q1'){ q1=val; document.getElementById('oQ1').textContent=Q1_LABELS[val]; }
+  else if(group==='q2'){ q2=val; document.getElementById('oQ2').textContent=Q2_LABELS[val]; }
+  else if(group==='q3'){ q3=val; document.getElementById('oQ3').textContent=Q3_LABELS[val]; }
+  else if(group==='s1'){ s1=val; document.getElementById('oS1').textContent=S1_LABELS[val]; }
+  else if(group==='s2'){ s2=val; document.getElementById('oS2').textContent=S2_LABELS[val]; }
+  updateDeriveBadge();
+}
+function updateDeriveBadge() {
+  var qScore = q1+q2+q3;
+  document.getElementById('derive-badge').textContent = 'Q score: ' + qScore + '/9';
+}
+
+// ── Calc logic ───────────────────────────────────────────────────
+// Lever 2 model: Landbase 2026 three-dimension decomposition.
+// Published stats: signal-qualified leads produce +47% opp-to-pipeline
+// conversion, +43% deal size, +38% close rate vs no-signal baseline.
+// These measure the total delta from Stage 1 (no signals) to Stage 3
+// (account-level signal infrastructure).
+//
+// Stage mapping (Stage 4 removed from public calculator):
+//   Stage 1 Reactive    qScore 3-4   capture 100% of Landbase delta
+//   Stage 2 Operational qScore 5-7   capture 80% of Landbase delta
+//   Stage 3 Integrated  qScore 8-9   capture 0% (already at endpoint)
+//
+// Redline premium: 15% multiplicative bonus on each dimension at every
+// stage, reflecting contact-level signal value not measured in the
+// Landbase account-level research.
+//
+// 80% compounding dampener applied to each individual dimension to
+// reflect real-world execution drag (rep ramp, market conditions,
+// engagement steady-state time).
+var LANDBASE = { vol: 0.47, acv: 0.43, close: 0.38 };
+var REDLINE_PREMIUM = 0.15;
+var DAMPENER = 0.80;
+
+function qualityStage(score) {
+  if(score<=4) return {stage:1, capture:1.00};  // Stage 1 Reactive
+  if(score<=7) return {stage:2, capture:0.80};  // Stage 2 Operationalized
+  return {stage:3, capture:0.00};               // Stage 3 Integrated
+}
+
+function leverTwoMultipliers(qScore, sScore) {
+  var st = qualityStage(qScore);
+  var mod = scopeModifier(sScore);
+  // Apply capture to Landbase base, then Redline premium multiplicatively
+  var volRaw   = (1 + LANDBASE.vol   * st.capture) * (1 + REDLINE_PREMIUM);
+  var acvRaw   = (1 + LANDBASE.acv   * st.capture) * (1 + REDLINE_PREMIUM);
+  var closeRaw = (1 + LANDBASE.close * st.capture) * (1 + REDLINE_PREMIUM);
+  // TAM scope modifier amplifies the lift above 1.0 before dampening
+  volRaw   = 1 + (volRaw   - 1) * mod;
+  acvRaw   = 1 + (acvRaw   - 1) * mod;
+  closeRaw = 1 + (closeRaw - 1) * mod;
+  // Apply 80% real-world compounding dampener to each dimension
+  return {
+    stage: st.stage,
+    volume: 1 + (volRaw   - 1) * DAMPENER,
+    acv:    1 + (acvRaw   - 1) * DAMPENER,
+    close:  1 + (closeRaw - 1) * DAMPENER
+  };
+}
+
+function scopeModifier(score) {
+  if(score<=3) return 1.00;
+  if(score<=5) return 1.15;
+  if(score<=7) return 1.30;
+  return 1.50;
+}
+function deriveLever1(hrs) {
+  var rec = Math.max(1.0, Math.min(1.5, 4.0-hrs));
+  return (hrs+rec)/hrs;
+}
+
+function calculate() {
+  var team    = parseInt(document.getElementById('iTeam').value) || 8;
+  var avgDealK= parseInt(document.getElementById('iACV').value) || 50;
+  var deals   = parseInt(document.getElementById('iDeals').value) || 12;
+  var closeR  = parseInt(document.getElementById('iClose').value) || 20;
+  var hrs     = parseFloat(document.getElementById('iHrs').value) || 2.8;
+
+  var qScore  = q1+q2+q3;
+  var sScore  = s1+s2;
+  var L2      = leverTwoMultipliers(qScore, sScore);
+  var multVal = Math.round(deriveLever1(hrs) * 100) / 100;
+
+  // Baseline state
+  var winBase    = closeR / 100;
+  var oppsB      = deals * team / winBase;  // team total opps/yr to hit closed deals
+  var pipelineB  = oppsB * avgDealK;
+  var bookedB    = deals * team * avgDealK;
+  var sellHrsYrB = hrs * DAYS * team;
+
+  // Lever 1: capacity recovered from outreach hours
+  var sellDayA  = Math.min(hrs * multVal, WORK_HRS * MAX_SELL_FRAC);
+  var capLift   = sellDayA / hrs;
+  var sellHrsYrA = sellDayA * DAYS * team;
+
+  // Lever 2: three-dimension lift applied to opps, ACV, and close rate
+  // Capacity recovery (Lever 1) flows to opp volume because more selling
+  // time produces more opportunities at the same per-hour rate.
+  var oppsA     = oppsB * capLift * L2.volume;
+  var avgDealA  = avgDealK * L2.acv;
+  var winA      = Math.min(winBase * L2.close, 0.60);  // cap retained as sanity bound
+  var pipelineA = oppsA * avgDealA;
+  var bookedA   = oppsA * avgDealA * winA;
+
+  var dPipeline = pipelineA - pipelineB;
+  var dRevenue  = bookedA - bookedB;
+
+  // ── Populate output ──────────────────────────────────────
+  document.getElementById('bd-hrs-b').textContent    = fmtHrs(sellHrsYrB);
+  document.getElementById('bd-hrs-a').textContent    = fmtHrs(sellHrsYrA);
+  document.getElementById('bd-opps-b').textContent   = fmtN(oppsB);
+  document.getElementById('bd-opps-a').textContent   = fmtN(oppsA);
+  document.getElementById('bd-pipe-b').textContent   = fmtM(pipelineB);
+  document.getElementById('bd-pipe-a').textContent   = fmtM(pipelineA);
+  document.getElementById('bd-close-b').textContent  = pct(winBase);
+  document.getElementById('bd-close-a').textContent  = pct(winA);
+  document.getElementById('bd-rev-b').textContent    = fmtM(bookedB);
+  document.getElementById('bd-rev-a').textContent    = fmtM(bookedA);
+
+  // Populate baseline and with-redline immediately
+  document.getElementById('out-pipe-b').textContent    = fmtM(pipelineB);
+  document.getElementById('out-pipe-a').textContent    = fmtM(pipelineA);
+  document.getElementById('out-rev-delta').textContent = '+' + fmtM(dRevenue);
+
+  // Percentage increase line per spec Section 4
+  var pctIncrease = pipelineB > 0 ? Math.round((dPipeline / pipelineB) * 100) : 0;
+  document.getElementById('out-pct').innerHTML =
+    'A potential <strong>' + pctIncrease + '%</strong> increase in pipeline, with the same team.';
+
+  // Lever decomposition (Option X: each lever shown standalone, combined multiplicative)
+  // Lever 1 alone: capacity recovery applied to baseline, no Lever 2
+  var pipelineL1only = pipelineB * capLift;
+  var pctL1 = pipelineB > 0 ? Math.round((pipelineL1only - pipelineB) / pipelineB * 100) : 0;
+  // Lever 2 alone: signal quality applied to baseline, no capacity recovery
+  var pipelineL2only = pipelineB * L2.volume * L2.acv;
+  var pctL2 = pipelineB > 0 ? Math.round((pipelineL2only - pipelineB) / pipelineB * 100) : 0;
+
+  document.getElementById('lv1-b').textContent   = fmtM(pipelineB);
+  document.getElementById('lv1-a').textContent   = fmtM(pipelineL1only);
+  document.getElementById('lv1-pct').textContent = '+' + pctL1 + '%';
+  document.getElementById('lv2-b').textContent   = fmtM(pipelineB);
+  document.getElementById('lv2-a').textContent   = fmtM(pipelineL2only);
+  document.getElementById('lv2-pct').textContent = '+' + pctL2 + '%';
+  document.getElementById('lvc-b').textContent   = fmtM(pipelineB);
+  document.getElementById('lvc-a').textContent   = fmtM(pipelineA);
+  document.getElementById('lvc-pct').textContent = '+' + pctIncrease + '%';
+
+  // Animate delta
+  var target = dPipeline;
+  var el = document.getElementById('out-delta');
+  var startTime = null;
+  function anim(ts) {
+    if(!startTime) startTime = ts;
+    var p = Math.min((ts-startTime)/600, 1);
+    var ease = 1 - Math.pow(1-p, 3);
+    el.textContent = '+' + fmtM(target * ease);
+    if(p < 1) requestAnimationFrame(anim);
+    else el.textContent = '+' + fmtM(target);
+  }
+  requestAnimationFrame(anim);
+
+  var panel = document.getElementById('output-panel');
+  panel.classList.add('visible');
+  setTimeout(function(){ panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120);
+}
+</script>
+</body>
+</html>
